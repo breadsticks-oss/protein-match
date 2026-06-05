@@ -36,6 +36,8 @@
 
 /* ── Reset ──────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* Ensure [hidden] always hides — overrides UA stylesheet gaps on mobile browsers */
+[hidden] { display: none !important; }
 html { scroll-behavior: smooth; overflow-x: hidden; }
 body {
   background: var(--bg);

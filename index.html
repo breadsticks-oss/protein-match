@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Protein Match — Find Australia's Best Protein Bar Deals</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=2" />
   <link rel="icon" href="favicon.png" type="image/png" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0B0F17" />
@@ -967,10 +967,10 @@ function showPage(name) {
   var cfg = _PAGE_CONFIG[name];
   if (!cfg) return;
 
-  // Show/hide pages
+  // Show/hide pages — use style.display directly, never rely on [hidden] attribute alone
   Object.keys(_PAGE_CONFIG).forEach(function(k) {
     var el = document.getElementById(_PAGE_CONFIG[k].page);
-    if (el) el.hidden = (k !== name);
+    if (el) el.style.display = (k !== name) ? 'none' : '';
   });
 
   // Active tab
