@@ -15,6 +15,9 @@
 </head>
 <body>
 
+<!-- ══════════════════════════════════════
+     SHARED: Top nav
+══════════════════════════════════════ -->
 <nav class="nav">
   <div class="nav__inner">
     <a href="/" class="nav__logo">
@@ -40,14 +43,19 @@
   <a href="/about">About</a>
 </div>
 
+<!-- SHARED: Mobile top bar (logo on home, title on inner pages) -->
 <div class="mobile-top-bar">
-  <div class="mobile-top-bar__logo">
+  <div class="mobile-top-bar__logo" id="mtb-logo">
     <img src="favicon.png" alt="" />
     Protein<span>Match</span>
   </div>
+  <div class="mobile-top-bar__title" id="mtb-title" style="display:none"></div>
 </div>
 
-<main class="page">
+<!-- ══════════════════════════════════════
+     PAGE: HOME
+══════════════════════════════════════ -->
+<main class="page" id="page-home">
   <div class="container">
 
     <section class="hero">
@@ -144,6 +152,401 @@
   </div>
 </main>
 
+<!-- ══════════════════════════════════════
+     PAGE: COMPARE
+══════════════════════════════════════ -->
+<main class="page" id="page-compare" hidden>
+  <div class="container">
+
+    <div style="margin-bottom:2rem">
+      <p class="label" style="margin-bottom:.35rem">Coles vs Woolworths</p>
+      <h1 style="font-size:2.2rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:.5rem">Compare Prices</h1>
+      <p style="color:var(--text-sec);font-size:.95rem">Search for any protein bar and see prices from both stores side-by-side.</p>
+    </div>
+
+    <div class="mobile-bar">
+      <div class="search-bar">
+        <span class="search-bar__icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+        <input type="text" id="cmp-msearch" placeholder="Search products…" />
+      </div>
+      <button class="mobile-icon-btn" id="cmp-filter-btn" aria-label="Filter">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      </button>
+      <button class="mobile-icon-btn" id="cmp-sort-btn" aria-label="Sort">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5h10M11 9h7M11 13h4"/><path d="M3 17l3 3 3-3"/><path d="M6 20V4"/></svg>
+      </button>
+    </div>
+    <div class="mobile-results" id="cmp-mcount"></div>
+
+    <div class="controls-bar">
+      <div class="search-bar">
+        <span class="search-bar__icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+        <input type="text" id="cmp-search" placeholder="Search by name or brand…" />
+      </div>
+      <label class="filter-pill" id="cmp-pcoles">
+        <input type="checkbox" id="cmp-fcoles" checked />
+        <span class="dot" style="background:#ff8fa3"></span> Coles
+      </label>
+      <label class="filter-pill" id="cmp-pwool">
+        <input type="checkbox" id="cmp-fwool" checked />
+        <span class="dot" style="background:var(--success)"></span> Woolworths
+      </label>
+      <label class="filter-pill" id="cmp-pcw">
+        <input type="checkbox" id="cmp-fcw" checked />
+        <span class="dot" style="background:#ff6b50"></span> Chemist WH
+      </label>
+      <label class="filter-pill" id="cmp-psale">
+        <input type="checkbox" id="cmp-fsale" />
+        <span class="dot" style="background:var(--warning)"></span> On Sale Only
+      </label>
+      <select class="filter-select" id="cmp-sort">
+        <option value="ppd">Best Value (Protein / $)</option>
+        <option value="price-asc">Price: Low → High</option>
+        <option value="price-desc">Price: High → Low</option>
+        <option value="protein">Most Protein</option>
+        <option value="calories">Lowest Calories</option>
+        <option value="name">Name A → Z</option>
+      </select>
+      <span class="results-count" id="cmp-count">— products</span>
+    </div>
+
+    <div class="compare-table-wrap" style="margin-bottom:3rem">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Coles</th>
+            <th>Woolworths</th>
+            <th>Chemist WH</th>
+            <th>Cheapest</th>
+            <th>Protein / $</th>
+            <th>Protein</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="compare-tbody">
+          <tr><td colspan="8" style="text-align:center;color:var(--text-sec);padding:2rem">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <p class="label" style="margin-bottom:.35rem">Card View</p>
+      <h2 class="section-title" style="margin-bottom:1.5rem">All Results</h2>
+      <div class="grid-4" id="cmp-cards"></div>
+    </div>
+
+    <!-- Filter Sheet -->
+    <div class="sheet-overlay" id="cmp-filter-sheet">
+      <div class="sheet">
+        <div class="sheet__handle"></div>
+        <div class="sheet__title">Filter</div>
+        <div class="sheet__section-label">Stores</div>
+        <div class="sheet-option active" data-store="coles" id="cmp-sh-coles"><span>Coles</span><div class="check"></div></div>
+        <div class="sheet-option active" data-store="woolworths" id="cmp-sh-wool"><span>Woolworths</span><div class="check"></div></div>
+        <div class="sheet-option active" data-store="cw" id="cmp-sh-cw"><span>Chemist Warehouse</span><div class="check"></div></div>
+        <div class="sheet__section-label">Special</div>
+        <div class="sheet-option" data-store="sale" id="cmp-sh-sale"><span>On Sale Only</span><div class="check"></div></div>
+        <button class="sheet__apply" id="cmp-filter-apply">Show Results</button>
+      </div>
+    </div>
+
+    <!-- Sort Sheet -->
+    <div class="sheet-overlay" id="cmp-sort-sheet">
+      <div class="sheet">
+        <div class="sheet__handle"></div>
+        <div class="sheet__title">Sort By</div>
+        <div class="sheet-radio active" data-sort="ppd"><div class="radio-dot"></div><span>Best Value (Protein / $)</span></div>
+        <div class="sheet-radio" data-sort="price-asc"><div class="radio-dot"></div><span>Cheapest First</span></div>
+        <div class="sheet-radio" data-sort="price-desc"><div class="radio-dot"></div><span>Most Expensive</span></div>
+        <div class="sheet-radio" data-sort="protein"><div class="radio-dot"></div><span>Most Protein</span></div>
+        <div class="sheet-radio" data-sort="calories"><div class="radio-dot"></div><span>Lowest Calories</span></div>
+        <div class="sheet-radio" data-sort="name"><div class="radio-dot"></div><span>A → Z</span></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ══════════════════════════════════════
+     PAGE: DIRECTORY
+══════════════════════════════════════ -->
+<main class="page" id="page-directory" hidden>
+  <div class="container">
+
+    <div style="margin-bottom:2rem">
+      <p class="label" style="margin-bottom:.35rem">Browse</p>
+      <h1 style="font-size:2.2rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:.5rem">Product Directory</h1>
+      <p style="color:var(--text-sec);font-size:.95rem">Every protein bar, yogurt and powder we track — with nutrition info and live pricing.</p>
+    </div>
+
+    <div class="mobile-bar">
+      <div class="search-bar">
+        <span class="search-bar__icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+        <input type="text" id="dir-msearch" placeholder="Search products…" />
+      </div>
+      <button class="mobile-icon-btn" id="dir-filter-btn" aria-label="Filter">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      </button>
+      <button class="mobile-icon-btn" id="dir-sort-btn" aria-label="Sort">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5h10M11 9h7M11 13h4"/><path d="M3 17l3 3 3-3"/><path d="M6 20V4"/></svg>
+      </button>
+    </div>
+    <div class="mobile-results" id="dir-mcount"></div>
+
+    <div class="controls-bar">
+      <div class="search-bar">
+        <span class="search-bar__icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+        <input type="text" id="dir-search" placeholder="Search bars, yogurts, powders, brands…" />
+      </div>
+      <label class="filter-pill" id="dir-pcoles">
+        <input type="checkbox" id="dir-fcoles" checked />
+        <span class="dot" style="background:#ff8fa3"></span> Coles
+      </label>
+      <label class="filter-pill" id="dir-pwool">
+        <input type="checkbox" id="dir-fwool" checked />
+        <span class="dot" style="background:var(--success)"></span> Woolworths
+      </label>
+      <label class="filter-pill" id="dir-pcw">
+        <input type="checkbox" id="dir-fcw" checked />
+        <span class="dot" style="background:#ff6b50"></span> Chemist WH
+      </label>
+      <label class="filter-pill" id="dir-psale">
+        <input type="checkbox" id="dir-fsale" />
+        <span class="dot" style="background:var(--warning)"></span> On Sale
+      </label>
+      <select class="filter-select" id="dir-brand"><option value="">All Brands</option></select>
+      <select class="filter-select" id="dir-sort">
+        <option value="ppd">Best Value</option>
+        <option value="price-asc">Cheapest First</option>
+        <option value="price-desc">Most Expensive</option>
+        <option value="protein">Most Protein</option>
+        <option value="calories">Lowest Calories</option>
+        <option value="name">A → Z</option>
+      </select>
+      <span class="results-count" id="dir-count">— products</span>
+    </div>
+
+    <div id="dir-cats" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem">
+      <button class="filter-pill active" data-cat="">All</button>
+      <button class="filter-pill" data-cat="bar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8" width="20" height="8" rx="2.5"/><path d="M8 8V7a2 2 0 0 1 4 0v1"/></svg> Bars</button>
+      <button class="filter-pill" data-cat="yogurt"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l1.5 8H5.5L7 3z"/><path d="M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/></svg> Yogurts</button>
+      <button class="filter-pill" data-cat="powder"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l1 5H7L8 3z"/><rect x="4" y="8" width="16" height="13" rx="2"/></svg> Powders</button>
+    </div>
+
+    <div class="grid-4" id="dir-cards"></div>
+
+    <!-- Filter Sheet -->
+    <div class="sheet-overlay" id="dir-filter-sheet">
+      <div class="sheet">
+        <div class="sheet__handle"></div>
+        <div class="sheet__title">Filter</div>
+        <div class="sheet__section-label">Stores</div>
+        <div class="sheet-option active" data-store="coles" id="dir-sh-coles"><span>Coles</span><div class="check"></div></div>
+        <div class="sheet-option active" data-store="woolworths" id="dir-sh-wool"><span>Woolworths</span><div class="check"></div></div>
+        <div class="sheet-option active" data-store="cw" id="dir-sh-cw"><span>Chemist Warehouse</span><div class="check"></div></div>
+        <div class="sheet__section-label">Special</div>
+        <div class="sheet-option" data-store="sale" id="dir-sh-sale"><span>On Sale Only</span><div class="check"></div></div>
+        <div class="sheet__section-label">Category</div>
+        <div class="sheet-radio active" data-cat="" id="dir-sh-cat-all"><div class="radio-dot"></div><span>All</span></div>
+        <div class="sheet-radio" data-cat="bar" id="dir-sh-cat-bar"><div class="radio-dot"></div><span>Bars</span></div>
+        <div class="sheet-radio" data-cat="yogurt" id="dir-sh-cat-yogurt"><div class="radio-dot"></div><span>Yogurts</span></div>
+        <div class="sheet-radio" data-cat="powder" id="dir-sh-cat-powder"><div class="radio-dot"></div><span>Powders</span></div>
+        <button class="sheet__apply" id="dir-filter-apply">Show Results</button>
+      </div>
+    </div>
+
+    <!-- Sort Sheet -->
+    <div class="sheet-overlay" id="dir-sort-sheet">
+      <div class="sheet">
+        <div class="sheet__handle"></div>
+        <div class="sheet__title">Sort By</div>
+        <div class="sheet-radio active" data-sort="ppd"><div class="radio-dot"></div><span>Best Value (Protein / $)</span></div>
+        <div class="sheet-radio" data-sort="price-asc"><div class="radio-dot"></div><span>Cheapest First</span></div>
+        <div class="sheet-radio" data-sort="price-desc"><div class="radio-dot"></div><span>Most Expensive</span></div>
+        <div class="sheet-radio" data-sort="protein"><div class="radio-dot"></div><span>Most Protein</span></div>
+        <div class="sheet-radio" data-sort="calories"><div class="radio-dot"></div><span>Lowest Calories</span></div>
+        <div class="sheet-radio" data-sort="name"><div class="radio-dot"></div><span>A → Z</span></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ══════════════════════════════════════
+     PAGE: BEST VALUE
+══════════════════════════════════════ -->
+<main class="page" id="page-best-value" hidden>
+  <div class="container">
+
+    <div style="margin-bottom:2.5rem">
+      <p class="label" style="margin-bottom:.35rem">Rankings</p>
+      <h1 style="font-size:2.2rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:.5rem">Best Value Protein Bars</h1>
+      <p style="color:var(--text-sec);font-size:.95rem;max-width:540px">Ranked by what actually matters — protein per dollar, cheapest price, highest protein, and lowest calories.</p>
+    </div>
+
+    <div style="background:linear-gradient(135deg,rgba(46,229,157,.10),rgba(77,163,255,.07));border:1px solid rgba(46,229,157,.25);border-radius:var(--radius-lg);padding:1.5rem 1.75rem;display:flex;gap:1.5rem;align-items:flex-start;margin-bottom:3rem;flex-wrap:wrap">
+      <div style="flex-shrink:0;width:40px;height:40px;background:rgba(46,229,157,.12);border:1px solid rgba(46,229,157,.3);border-radius:10px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h4"/></svg></div>
+      <div>
+        <h3 style="font-size:1rem;font-weight:700;color:var(--success);margin-bottom:.35rem">How we calculate Protein Per Dollar</h3>
+        <p style="color:var(--text-sec);font-size:.88rem;line-height:1.7;max-width:560px">
+          We divide the protein content (grams) by the cheapest available price across both stores.
+          Example: a bar with <strong style="color:var(--text)">40g protein</strong> at <strong style="color:var(--text)">$3.20</strong>
+          = <strong style="color:var(--success)">12.5g of protein per dollar</strong>. Higher is better.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid-2" style="gap:2rem">
+      <div class="section">
+        <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:1.25rem">
+          <span style="width:30px;height:30px;background:rgba(255,176,32,.12);border-radius:8px;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></span>
+          <div><p class="label">Ranking 1</p><h2 style="font-size:1.25rem;font-weight:700">Best Protein Per Dollar</h2></div>
+        </div>
+        <div class="rank-list" id="rank-ppd"></div>
+      </div>
+      <div class="section">
+        <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:1.25rem">
+          <span style="width:30px;height:30px;background:rgba(46,229,157,.12);border-radius:8px;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+          <div><p class="label">Ranking 2</p><h2 style="font-size:1.25rem;font-weight:700">Cheapest Bars</h2></div>
+        </div>
+        <div class="rank-list" id="rank-cheapest"></div>
+      </div>
+      <div class="section">
+        <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:1.25rem">
+          <span style="width:30px;height:30px;background:rgba(77,163,255,.12);border-radius:8px;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></span>
+          <div><p class="label">Ranking 3</p><h2 style="font-size:1.25rem;font-weight:700">Highest Protein</h2></div>
+        </div>
+        <div class="rank-list" id="rank-protein"></div>
+      </div>
+      <div class="section">
+        <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:1.25rem">
+          <span style="width:30px;height:30px;background:rgba(255,92,122,.12);border-radius:8px;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/></svg></span>
+          <div><p class="label">Ranking 4</p><h2 style="font-size:1.25rem;font-weight:700">Lowest Calories</h2></div>
+        </div>
+        <div class="rank-list" id="rank-calories"></div>
+      </div>
+    </div>
+
+    <section class="section">
+      <p class="label" style="margin-bottom:.35rem">Current Specials</p>
+      <h2 class="section-title">Best Deals On Sale Right Now</h2>
+      <p class="section-sub">On-sale items ranked by protein per dollar.</p>
+      <div class="grid-4" id="sale-cards"></div>
+    </section>
+
+  </div>
+</main>
+
+<!-- ══════════════════════════════════════
+     PAGE: ABOUT
+══════════════════════════════════════ -->
+<main class="page" id="page-about" hidden>
+  <div class="container">
+
+    <div class="about-hero">
+      <h1>Smarter shopping<br>for <em>serious</em> athletes.</h1>
+      <p style="color:var(--text-sec);font-size:1.05rem;max-width:560px;line-height:1.75">
+        Protein Match helps Australians find the best protein bar prices across Coles and Woolworths — without the guesswork.
+      </p>
+    </div>
+
+    <div class="grid-2" style="gap:3rem;align-items:start">
+
+      <div class="about-content">
+        <h2>Why protein matters</h2>
+        <p>Protein is the most important macronutrient for anyone who trains — it repairs muscle tissue, supports recovery, and keeps you fuller for longer. Most active people need between 1.6–2.2g of protein per kilogram of bodyweight each day, and protein bars are one of the most convenient ways to hit that target.</p>
+
+        <h2>Why comparing prices saves you money</h2>
+        <p>A bar that looks cheap at $3.00 might only have 12g of protein, while a $3.50 bar delivers 40g. That's nearly four times the protein for just 50 cents more. Without comparing, you're leaving gains and money on the table.</p>
+        <p>Coles and Woolworths rotate specials weekly, meaning the cheapest bar this week might be full price next week. Protein Match makes it easy to always know who has the better deal.</p>
+
+        <h2>What is Protein Per Dollar?</h2>
+        <p>Our standout metric. Instead of just listing prices, we calculate how many grams of protein you receive for every dollar spent. A bar with 40g protein at $3.20 gives you <strong style="color:var(--success)">12.5g of protein per dollar</strong>. A bar with 20g protein at $4.50 gives you just <strong style="color:var(--danger)">4.4g per dollar</strong>. Same category, wildly different value.</p>
+
+        <h2>About this project</h2>
+        <p>Protein Match was built as a school web design assessment, demonstrating responsive layout, card components, data tables, modals, filtering, sorting, live API data, and a consistent design system — all in pure HTML, CSS, and JavaScript.</p>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:1.5rem">
+          <div class="card__body">
+            <p class="label" style="margin-bottom:.75rem">What this site does</p>
+            <ul class="feature-list">
+              <li>Compares protein bar prices across Coles and Woolworths</li>
+              <li>Pulls real product data and images from Open Food Facts API</li>
+              <li>Search by brand, name, or flavour instantly</li>
+              <li>Filter by store, on-sale status, and brand</li>
+              <li>Sort by price, protein content, calories, or value</li>
+              <li>Calculates protein-per-dollar for every product</li>
+              <li>Full nutrition panel: protein, calories, carbs, fat, sugar</li>
+              <li>Highlights specials and sale prices clearly</li>
+              <li>Ranks bars across four different categories</li>
+              <li>Fully responsive — desktop and mobile</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:1.5rem">
+          <div class="card__body">
+            <p class="label" style="margin-bottom:1rem">By the numbers</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div style="text-align:center;padding:.75rem;background:var(--surface);border-radius:var(--radius-sm)">
+                <span style="font-family:var(--font-mono);font-size:1.75rem;color:var(--accent);display:block" id="stat-total">—</span>
+                <span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-sec)">Bars tracked</span>
+              </div>
+              <div style="text-align:center;padding:.75rem;background:var(--surface);border-radius:var(--radius-sm)">
+                <span style="font-family:var(--font-mono);font-size:1.75rem;color:var(--success);display:block" id="stat-sale">—</span>
+                <span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-sec)">On sale now</span>
+              </div>
+              <div style="text-align:center;padding:.75rem;background:var(--surface);border-radius:var(--radius-sm)">
+                <span style="font-family:var(--font-mono);font-size:1.75rem;color:var(--warning);display:block" id="stat-brands">—</span>
+                <span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-sec)">Brands</span>
+              </div>
+              <div style="text-align:center;padding:.75rem;background:var(--surface);border-radius:var(--radius-sm)">
+                <span style="font-family:var(--font-mono);font-size:1.75rem;color:var(--text);display:block">2</span>
+                <span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-sec)">Stores compared</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <p class="label" style="margin-bottom:.75rem">Built with</p>
+            <div style="display:flex;flex-wrap:wrap;gap:.5rem">
+              <span class="badge badge--new">HTML5</span>
+              <span class="badge badge--new">CSS3</span>
+              <span class="badge badge--new">Vanilla JS</span>
+              <span class="badge badge--best">Plus Jakarta Sans</span>
+              <span class="badge badge--best">DM Mono</span>
+              <span class="badge badge--best">Instrument Serif</span>
+              <span class="badge badge--sale">Open Food Facts API</span>
+            </div>
+            <p style="font-size:.8rem;color:var(--text-sec);margin-top:1rem;line-height:1.6">
+              No frameworks, no build tools. Pure HTML, CSS and JavaScript — demonstrating that great design doesn't need a library.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:4rem;text-align:center;padding:3rem 2rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg)">
+      <h2 style="font-size:1.6rem;font-weight:700;margin-bottom:.75rem">Ready to find the best deal?</h2>
+      <p style="color:var(--text-sec);margin-bottom:1.75rem;font-size:.95rem">Search across Coles and Woolworths and find your next protein bar in seconds.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <a href="/compare" class="btn btn--primary">Compare Prices →</a>
+        <a href="/best-value" class="btn btn--ghost">See Rankings</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ══════════════════════════════════════
+     SHARED: Footer
+══════════════════════════════════════ -->
 <footer class="footer">
   <div class="footer__inner">
     <div class="footer__logo"><img src="favicon.png" style="width:20px;height:20px;object-fit:contain;border-radius:5px;display:block;flex-shrink:0">Protein<span>Match</span></div>
@@ -158,96 +561,477 @@
   </div>
 </footer>
 
-<script src="data.js"></script>
-<script src="app.js"></script>
-<script>
-// ── Scroll-reveal via IntersectionObserver ────
-(function () {
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        io.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.08, rootMargin: '0px 0px -48px 0px' });
-
-  // Observe all fade-up elements on first paint
-  document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
-
-  // Re-observe after dynamic content (cards) is injected
-  window.__reObserveFadeUp = () =>
-    document.querySelectorAll('.fade-up:not(.visible)').forEach(el => io.observe(el));
-})();
-</script>
-<script>
-(async () => {
-  const products = await loadProducts([document.getElementById('featured-grid'), document.getElementById('specials-grid')]);
-  const onSale   = products.filter(p => isOnSale(p));
-
-  document.getElementById('stat-products').textContent = products.length;
-  document.getElementById('stat-sales').textContent    = onSale.length;
-
-  const featured = [...products].sort((a,b) => proteinPerDollar(b) - proteinPerDollar(a)).slice(0, 4);
-  document.getElementById('featured-grid').innerHTML = featured.map((p,i) => buildCard(p,i)).join('');
-
-  const specials = onSale.slice(0, 4);
-  document.getElementById('specials-grid').innerHTML = specials.length
-    ? specials.map((p,i) => buildCard(p,i)).join('')
-    : '<p style="color:var(--text-sec);grid-column:1/-1">No specials right now — check back soon.</p>';
-
-  // Trigger scroll-reveal for any newly visible sections
-  if (window.__reObserveFadeUp) window.__reObserveFadeUp();
-
-  const heroInput   = document.getElementById('hero-search');
-  const heroResults = document.getElementById('hero-results');
-  heroInput.addEventListener('input', () => {
-    const q = heroInput.value.trim().toLowerCase();
-    if (!q) { heroResults.innerHTML = ''; return; }
-    const results = products.filter(p =>
-      p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q)
-    ).slice(0, 4);
-    heroResults.innerHTML = results.length
-      ? results.map((p,i) => buildCard(p,i)).join('')
-      : `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div class="empty-state__title">No results for "${q}"</div></div>`;
-  });
-})();
-</script>
+<!-- ══════════════════════════════════════
+     SHARED: Tab bar
+══════════════════════════════════════ -->
 <nav class="tab-bar" aria-label="Main navigation">
-  <a href="/" class="tab-bar__item" id="tab-home" onclick="event.preventDefault();location.href=this.href" ontouchstart="">
+  <a href="/" class="tab-bar__item" id="tab-home">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     <span class="tab-bar__label">Home</span>
   </a>
-  <a href="/directory" class="tab-bar__item" id="tab-directory" onclick="event.preventDefault();location.href=this.href" ontouchstart="">
+  <a href="/directory" class="tab-bar__item" id="tab-directory">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
     <span class="tab-bar__label">Directory</span>
   </a>
-  <a href="/compare" class="tab-bar__item" id="tab-compare" onclick="event.preventDefault();location.href=this.href" ontouchstart="">
+  <a href="/compare" class="tab-bar__item" id="tab-compare">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     <span class="tab-bar__label">Compare</span>
   </a>
-  <a href="/best-value" class="tab-bar__item" id="tab-best" onclick="event.preventDefault();location.href=this.href" ontouchstart="">
+  <a href="/best-value" class="tab-bar__item" id="tab-best">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
     <span class="tab-bar__label">Best Value</span>
   </a>
-  <a href="/about" class="tab-bar__item" id="tab-about" onclick="event.preventDefault();location.href=this.href" ontouchstart="">
+  <a href="/about" class="tab-bar__item" id="tab-about">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <span class="tab-bar__label">About</span>
   </a>
 </nav>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+
 <script>
-// Set active tab based on current page
-(function() {
-  var path = location.pathname;
-  var map = { '/': 'tab-home', '/directory': 'tab-directory', '/compare': 'tab-compare', '/best-value': 'tab-best', '/about': 'tab-about' };
-  var el = document.getElementById(map[path]);
-  if (el) el.classList.add('active');
+// ── Scroll-reveal ───────────────────────────────────────────────
+(function () {
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -48px 0px' });
+  document.querySelectorAll('.fade-up').forEach(function(el) { io.observe(el); });
+  window.__reObserveFadeUp = function() {
+    document.querySelectorAll('.fade-up:not(.visible)').forEach(function(el) { io.observe(el); });
+  };
 })();
+
+// ── Products cache (one fetch shared across all pages) ──────────
+var _spaProducts = null;
+
+async function spaProducts(loadingTargets) {
+  if (_spaProducts !== null) {
+    if (loadingTargets) loadingTargets.forEach(function(el) { if (el) el.innerHTML = ''; });
+    return _spaProducts;
+  }
+  _spaProducts = await loadProducts(loadingTargets || []);
+  return _spaProducts;
+}
+
+// ── buildRankItem (used by Best Value page) ─────────────────────
+function buildRankItem(product, rank, valueHTML, subText) {
+  return '<div class="rank-item" onclick=\'openModal(' + JSON.stringify(product) + ')\'>' +
+    '<div class="rank-num">' + rank + '</div>' +
+    '<div class="rank-info">' +
+      '<div class="rank-name">' + product.name + ' <span style="font-weight:400;color:var(--text-sec);font-size:.8rem">' + (product.flavour || '') + '</span></div>' +
+      '<div class="rank-sub">' + subText + '</div>' +
+    '</div>' +
+    '<div class="rank-value">' + valueHTML + '</div>' +
+  '</div>';
+}
+
+// ── Page init functions (called once, on first visit) ───────────
+
+async function initHome() {
+  var products = await spaProducts([
+    document.getElementById('featured-grid'),
+    document.getElementById('specials-grid')
+  ]);
+  var onSale = products.filter(function(p) { return isOnSale(p); });
+  document.getElementById('stat-products').textContent = products.length;
+  document.getElementById('stat-sales').textContent    = onSale.length;
+
+  var featured = products.slice().sort(function(a,b) { return proteinPerDollar(b) - proteinPerDollar(a); }).slice(0, 4);
+  document.getElementById('featured-grid').innerHTML = featured.map(function(p,i) { return buildCard(p,i); }).join('');
+
+  var specials = onSale.slice(0, 4);
+  document.getElementById('specials-grid').innerHTML = specials.length
+    ? specials.map(function(p,i) { return buildCard(p,i); }).join('')
+    : '<p style="color:var(--text-sec);grid-column:1/-1">No specials right now — check back soon.</p>';
+
+  if (window.__reObserveFadeUp) window.__reObserveFadeUp();
+
+  var heroInput   = document.getElementById('hero-search');
+  var heroResults = document.getElementById('hero-results');
+  heroInput.addEventListener('input', function() {
+    var q = heroInput.value.trim().toLowerCase();
+    if (!q) { heroResults.innerHTML = ''; return; }
+    var results = products.filter(function(p) {
+      return p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q);
+    }).slice(0, 4);
+    heroResults.innerHTML = results.length
+      ? results.map(function(p,i) { return buildCard(p,i); }).join('')
+      : '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div class="empty-state__title">No results for &quot;' + q + '&quot;</div></div>';
+  });
+}
+
+async function initCompare() {
+  var all = await spaProducts([document.getElementById('cmp-cards')]);
+  var searchInput = document.getElementById('cmp-search');
+  var sortSelect  = document.getElementById('cmp-sort');
+  var filterColes = document.getElementById('cmp-fcoles');
+  var filterWool  = document.getElementById('cmp-fwool');
+  var filterCW    = document.getElementById('cmp-fcw');
+  var filterSale  = document.getElementById('cmp-fsale');
+  var pillColes   = document.getElementById('cmp-pcoles');
+  var pillWool    = document.getElementById('cmp-pwool');
+  var pillCW      = document.getElementById('cmp-pcw');
+  var pillSale    = document.getElementById('cmp-psale');
+  var tbody       = document.getElementById('compare-tbody');
+  var cardsGrid   = document.getElementById('cmp-cards');
+  var countEl     = document.getElementById('cmp-count');
+
+  function render() {
+    pillColes.classList.toggle('active', filterColes.checked);
+    pillWool.classList.toggle('active',  filterWool.checked);
+    pillCW.classList.toggle('active',    filterCW.checked);
+    pillSale.classList.toggle('active',  filterSale.checked);
+
+    var q = searchInput.value.trim().toLowerCase();
+    var results = all.filter(function(p) {
+      var matchQ     = !q || p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q);
+      var matchSale  = !filterSale.checked || isOnSale(p);
+      var matchStore = (filterColes.checked && p.coles) || (filterWool.checked && p.woolworths) || (filterCW.checked && p.chemistwarehouse);
+      return matchQ && matchSale && matchStore;
+    });
+
+    results.sort(function(a, b) {
+      switch (sortSelect.value) {
+        case 'ppd':        return proteinPerDollar(b) - proteinPerDollar(a);
+        case 'price-asc':  return bestPrice(a) - bestPrice(b);
+        case 'price-desc': return bestPrice(b) - bestPrice(a);
+        case 'protein':    return b.protein - a.protein;
+        case 'calories':   return a.calories - b.calories;
+        case 'name':       return a.name.localeCompare(b.name);
+        default: return 0;
+      }
+    });
+
+    countEl.textContent = results.length + ' product' + (results.length !== 1 ? 's' : '');
+
+    if (!results.length) {
+      tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-state__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div class="empty-state__title">No results found</div><div class="empty-state__sub">Try adjusting your search or filters.</div></div></td></tr>';
+      cardsGrid.innerHTML = '';
+      return;
+    }
+
+    var view = function(p) { return Object.assign({}, p, {
+      coles:            filterColes.checked ? p.coles            : null,
+      woolworths:       filterWool.checked  ? p.woolworths        : null,
+      chemistwarehouse: filterCW.checked    ? p.chemistwarehouse  : null,
+    }); };
+    tbody.innerHTML     = results.map(function(p) { return buildRow(view(p)); }).join('');
+    cardsGrid.innerHTML = results.map(function(p,i) { return buildCard(view(p), i); }).join('');
+  }
+
+  searchInput.addEventListener('input',  render);
+  sortSelect.addEventListener('change',  render);
+  filterColes.addEventListener('change', render);
+  filterWool.addEventListener('change',  render);
+  filterCW.addEventListener('change',    render);
+  filterSale.addEventListener('change',  render);
+  render();
+
+  // Mobile sheets
+  (function() {
+    var mInput = document.getElementById('cmp-msearch');
+    var mCount = document.getElementById('cmp-mcount');
+    var fSheet = document.getElementById('cmp-filter-sheet');
+    var sSheet = document.getElementById('cmp-sort-sheet');
+
+    if (mInput) {
+      mInput.addEventListener('input', function() {
+        searchInput.value = mInput.value;
+        render();
+      });
+    }
+
+    var obs = new MutationObserver(function() {
+      if (mCount) mCount.textContent = countEl.textContent;
+    });
+    obs.observe(countEl, { childList: true });
+
+    document.getElementById('cmp-filter-btn').addEventListener('click', function() { fSheet.classList.add('open'); });
+    fSheet.addEventListener('click', function(e) { if (e.target === fSheet) fSheet.classList.remove('open'); });
+    document.getElementById('cmp-sort-btn').addEventListener('click', function() { sSheet.classList.add('open'); });
+    sSheet.addEventListener('click', function(e) { if (e.target === sSheet) sSheet.classList.remove('open'); });
+
+    ['coles','wool','cw','sale'].forEach(function(id) {
+      var el = document.getElementById('cmp-sh-' + id);
+      if (!el) return;
+      el.addEventListener('click', function() {
+        el.classList.toggle('active');
+        var cbId = id === 'wool' ? 'cmp-fwool' : id === 'cw' ? 'cmp-fcw' : id === 'sale' ? 'cmp-fsale' : 'cmp-fcoles';
+        var cb = document.getElementById(cbId);
+        if (cb) { cb.checked = el.classList.contains('active'); }
+        render();
+      });
+    });
+
+    document.querySelectorAll('#cmp-sort-sheet .sheet-radio[data-sort]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#cmp-sort-sheet .sheet-radio').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        sortSelect.value = btn.dataset.sort;
+        render();
+        setTimeout(function() { sSheet.classList.remove('open'); }, 200);
+      });
+    });
+
+    document.getElementById('cmp-filter-apply').addEventListener('click', function() { fSheet.classList.remove('open'); });
+  })();
+}
+
+async function initDirectory() {
+  var all = await spaProducts([document.getElementById('dir-cards')]);
+  var brands = Array.from(new Set(all.map(function(p) { return p.brand; }))).sort();
+
+  var brandSelect = document.getElementById('dir-brand');
+  brands.forEach(function(b) {
+    var o = document.createElement('option');
+    o.value = b; o.textContent = b;
+    brandSelect.appendChild(o);
+  });
+
+  var catChipsWrap  = document.getElementById('dir-cats');
+  var activeCategory = '';
+  catChipsWrap.querySelectorAll('[data-cat]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      activeCategory = btn.dataset.cat;
+      catChipsWrap.querySelectorAll('[data-cat]').forEach(function(b) { b.classList.toggle('active', b === btn); });
+      render();
+    });
+  });
+
+  var searchInput = document.getElementById('dir-search');
+  var sortSelect  = document.getElementById('dir-sort');
+  var filterColes = document.getElementById('dir-fcoles');
+  var filterWool  = document.getElementById('dir-fwool');
+  var filterCW    = document.getElementById('dir-fcw');
+  var filterSale  = document.getElementById('dir-fsale');
+  var pillColes   = document.getElementById('dir-pcoles');
+  var pillWool    = document.getElementById('dir-pwool');
+  var pillCW      = document.getElementById('dir-pcw');
+  var pillSale    = document.getElementById('dir-psale');
+  var cardsGrid   = document.getElementById('dir-cards');
+  var countEl     = document.getElementById('dir-count');
+
+  function render() {
+    pillColes.classList.toggle('active', filterColes.checked);
+    pillWool.classList.toggle('active',  filterWool.checked);
+    pillCW.classList.toggle('active',    filterCW.checked);
+    pillSale.classList.toggle('active',  filterSale.checked);
+
+    var q     = searchInput.value.trim().toLowerCase();
+    var brand = brandSelect.value;
+
+    var results = all.filter(function(p) {
+      var matchQ     = !q || p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q);
+      var matchBrand = !brand || p.brand === brand;
+      var matchCat   = !activeCategory || p.category === activeCategory;
+      var matchSale  = !filterSale.checked || isOnSale(p);
+      var matchStore = (filterColes.checked && p.coles) || (filterWool.checked && p.woolworths) || (filterCW.checked && p.chemistwarehouse);
+      return matchQ && matchBrand && matchCat && matchSale && matchStore;
+    });
+
+    results.sort(function(a, b) {
+      switch (sortSelect.value) {
+        case 'ppd':        return proteinPerDollar(b) - proteinPerDollar(a);
+        case 'price-asc':  return bestPrice(a) - bestPrice(b);
+        case 'price-desc': return bestPrice(b) - bestPrice(a);
+        case 'protein':    return b.protein - a.protein;
+        case 'calories':   return a.calories - b.calories;
+        case 'name':       return a.name.localeCompare(b.name);
+        default: return 0;
+      }
+    });
+
+    countEl.textContent = results.length + ' product' + (results.length !== 1 ? 's' : '');
+    cardsGrid.innerHTML = results.length
+      ? results.map(function(p,i) { return buildCard(p,i); }).join('')
+      : '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div class="empty-state__title">No bars found</div><div class="empty-state__sub">Try a different search or clear your filters.</div></div>';
+  }
+
+  searchInput.addEventListener('input',  render);
+  sortSelect.addEventListener('change',  render);
+  brandSelect.addEventListener('change', render);
+  filterColes.addEventListener('change', render);
+  filterWool.addEventListener('change',  render);
+  filterCW.addEventListener('change',    render);
+  filterSale.addEventListener('change',  render);
+  render();
+
+  // Mobile sheets
+  (function() {
+    var mobileInput = document.getElementById('dir-msearch');
+    var mobileCount = document.getElementById('dir-mcount');
+    var filterSheet = document.getElementById('dir-filter-sheet');
+    var sortSheet   = document.getElementById('dir-sort-sheet');
+
+    if (mobileInput) {
+      mobileInput.addEventListener('input', function() {
+        searchInput.value = mobileInput.value;
+        render();
+      });
+    }
+
+    var obs = new MutationObserver(function() {
+      if (mobileCount) mobileCount.textContent = countEl.textContent;
+    });
+    obs.observe(countEl, { childList: true });
+
+    document.getElementById('dir-filter-btn').addEventListener('click', function() { filterSheet.classList.add('open'); });
+    filterSheet.addEventListener('click', function(e) { if (e.target === filterSheet) filterSheet.classList.remove('open'); });
+    document.getElementById('dir-sort-btn').addEventListener('click', function() { sortSheet.classList.add('open'); });
+    sortSheet.addEventListener('click', function(e) { if (e.target === sortSheet) sortSheet.classList.remove('open'); });
+
+    ['coles','wool','cw','sale'].forEach(function(id) {
+      var el = document.getElementById('dir-sh-' + id);
+      if (!el) return;
+      el.addEventListener('click', function() {
+        el.classList.toggle('active');
+        var cbId = id === 'wool' ? 'dir-fwool' : id === 'cw' ? 'dir-fcw' : id === 'sale' ? 'dir-fsale' : 'dir-fcoles';
+        var cb = document.getElementById(cbId);
+        if (cb) { cb.checked = el.classList.contains('active'); }
+        render();
+      });
+    });
+
+    document.querySelectorAll('#dir-filter-sheet .sheet-radio[data-cat]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#dir-filter-sheet .sheet-radio[data-cat]').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        var cat = btn.dataset.cat;
+        document.querySelectorAll('#dir-cats [data-cat]').forEach(function(b) {
+          b.classList.toggle('active', b.dataset.cat === cat);
+          if (b.dataset.cat === cat) b.click();
+        });
+      });
+    });
+
+    document.querySelectorAll('#dir-sort-sheet .sheet-radio[data-sort]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#dir-sort-sheet .sheet-radio').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        sortSelect.value = btn.dataset.sort;
+        render();
+        setTimeout(function() { sortSheet.classList.remove('open'); }, 200);
+      });
+    });
+
+    document.getElementById('dir-filter-apply').addEventListener('click', function() { filterSheet.classList.remove('open'); });
+  })();
+}
+
+async function initBestValue() {
+  var all = await spaProducts([document.getElementById('sale-cards')]);
+  var TOP = 7;
+
+  document.getElementById('rank-ppd').innerHTML = all.slice().sort(function(a,b) { return proteinPerDollar(b) - proteinPerDollar(a); }).slice(0, TOP)
+    .map(function(p,i) { return buildRankItem(p, i+1, '<span style="color:var(--success);font-family:var(--font-mono)">' + proteinPerDollar(p).toFixed(1) + 'g/$1</span>', p.brand + ' · $' + bestPrice(p).toFixed(2) + ' best price'); }).join('');
+
+  document.getElementById('rank-cheapest').innerHTML = all.slice().sort(function(a,b) { return bestPrice(a) - bestPrice(b); }).slice(0, TOP)
+    .map(function(p,i) {
+      var s = cheapestStore(p);
+      return buildRankItem(p, i+1, '<span style="font-family:var(--font-mono)">$' + bestPrice(p).toFixed(2) + '</span>', p.brand + ' · ' + (s === 'coles' ? 'Coles' : s === 'woolworths' ? 'Woolworths' : 'Both stores'));
+    }).join('');
+
+  document.getElementById('rank-protein').innerHTML = all.slice().sort(function(a,b) { return b.protein - a.protein; }).slice(0, TOP)
+    .map(function(p,i) { return buildRankItem(p, i+1, '<span style="color:var(--accent);font-family:var(--font-mono)">' + p.protein + 'g</span>', p.brand + ' · $' + bestPrice(p).toFixed(2) + ' best price'); }).join('');
+
+  document.getElementById('rank-calories').innerHTML = all.slice().sort(function(a,b) { return a.calories - b.calories; }).slice(0, TOP)
+    .map(function(p,i) { return buildRankItem(p, i+1, '<span style="color:var(--warning);font-family:var(--font-mono)">' + p.calories + ' cal</span>', p.brand + ' · ' + p.protein + 'g protein'); }).join('');
+
+  var saleItems = all.filter(function(p) { return isOnSale(p); }).sort(function(a,b) { return proteinPerDollar(b) - proteinPerDollar(a); });
+  document.getElementById('sale-cards').innerHTML = saleItems.length
+    ? saleItems.map(function(p,i) { return buildCard(p,i); }).join('')
+    : '<p style="color:var(--text-sec);grid-column:1/-1;padding:2rem 0">No specials at the moment — check back soon.</p>';
+}
+
+async function initAbout() {
+  var all = await spaProducts();
+  document.getElementById('stat-total').textContent  = all.length;
+  document.getElementById('stat-sale').textContent   = all.filter(function(p) { return isOnSale(p); }).length;
+  document.getElementById('stat-brands').textContent = new Set(all.map(function(p) { return p.brand; })).size;
+}
+
+// ── SPA Router ──────────────────────────────────────────────────
+var SPA_ROUTES = {
+  '/':           { page: 'page-home',       tab: 'tab-home',      title: "Protein Match — Find Australia’s Best Protein Bar Deals", topBar: null,           init: initHome },
+  '/compare':    { page: 'page-compare',    tab: 'tab-compare',   title: 'Compare Prices — Protein Match',                                topBar: 'Compare',      init: initCompare },
+  '/directory':  { page: 'page-directory',  tab: 'tab-directory', title: 'Product Directory — Protein Match',                             topBar: 'All Products', init: initDirectory },
+  '/best-value': { page: 'page-best-value', tab: 'tab-best',      title: 'Best Value — Protein Match',                                    topBar: 'Best Value',   init: initBestValue },
+  '/about':      { page: 'page-about',      tab: 'tab-about',     title: 'About — Protein Match',                                         topBar: 'About',        init: initAbout },
+};
+var _spaInited = {};
+
+function navigateTo(path, push) {
+  if (push === undefined) push = true;
+  var route = SPA_ROUTES[path] || SPA_ROUTES['/'];
+  var actualPath = SPA_ROUTES[path] ? path : '/';
+  if (push) history.pushState({}, '', actualPath);
+
+  document.title = route.title;
+
+  // Mobile top bar
+  var logo  = document.getElementById('mtb-logo');
+  var title = document.getElementById('mtb-title');
+  if (actualPath === '/') {
+    if (logo)  logo.style.display  = '';
+    if (title) title.style.display = 'none';
+  } else {
+    if (logo)  logo.style.display  = 'none';
+    if (title) { title.style.display = ''; title.textContent = route.topBar; }
+  }
+
+  // Show the right page, hide all others
+  Object.keys(SPA_ROUTES).forEach(function(k) {
+    var el = document.getElementById(SPA_ROUTES[k].page);
+    if (el) el.hidden = (SPA_ROUTES[k].page !== route.page);
+  });
+
+  // Active tab
+  document.querySelectorAll('.tab-bar__item').forEach(function(a) { a.classList.remove('active'); });
+  var tab = document.getElementById(route.tab);
+  if (tab) tab.classList.add('active');
+
+  // Active desktop nav
+  document.querySelectorAll('.nav__links a, .nav__mobile a').forEach(function(a) {
+    var href = a.getAttribute('href') || '';
+    a.classList.toggle('active', href === actualPath || (href === '/' && actualPath === '/'));
+  });
+
+  // Scroll to top
+  window.scrollTo(0, 0);
+
+  // Init the page once
+  if (!_spaInited[actualPath]) {
+    _spaInited[actualPath] = true;
+    route.init();
+  }
+}
+
+// Intercept ALL internal link clicks (capture phase — fires before any other handler)
+document.addEventListener('click', function(e) {
+  var a = e.target.closest('a');
+  if (!a || a.target === '_blank') return;
+  var href = a.getAttribute('href');
+  if (href && SPA_ROUTES[href] !== undefined) {
+    e.preventDefault();
+    e.stopPropagation();
+    navigateTo(href);
+  }
+}, true);
+
+// Browser back / forward
+window.addEventListener('popstate', function() { navigateTo(location.pathname, false); });
+
+// Initial page load
+navigateTo(location.pathname, false);
 </script>
+
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
   });
 }
 </script>

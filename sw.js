@@ -1,4 +1,4 @@
-const CACHE = 'protein-match-v4';
+const CACHE = 'protein-match-v5';
 const STATIC_ASSETS = [
   '/styles.css',
   '/app.js',
