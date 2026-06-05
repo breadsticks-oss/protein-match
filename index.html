@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Protein Match — Find Australia's Best Protein Bar Deals</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.png" type="image/png" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">
+      <img src="favicon.png" class="nav__logo-icon" alt="" />
+      Protein<span class="accent">Match</span>
+    </a>
+    <ul class="nav__links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="compare.html">Compare</a></li>
+      <li><a href="directory.html">All Products</a></li>
+      <li><a href="best-value.html">Best Value</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="compare.html" class="nav__cta">Find Deals →</a></li>
+    </ul>
+    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav__mobile">
+  <a href="index.html">Home</a>
+  <a href="compare.html">Compare Prices</a>
+  <a href="directory.html">All Products</a>
+  <a href="best-value.html">Best Value</a>
+  <a href="about.html">About</a>
+</div>
+
+<main class="page">
+  <div class="container">
+
+    <section class="hero">
+      <div class="hero__eyebrow">
+        <div class="dot"></div>
+        Updated from Coles &amp; Woolworths
+      </div>
+      <h1 class="hero__title">
+        Find Australia's Best<br>
+        <span class="highlight">Protein Bar Deals</span>
+      </h1>
+      <p class="hero__sub">
+        Stop guessing. Compare protein bars across Coles and Woolworths.
+        Find the best protein-per-dollar before you buy.
+      </p>
+      <div class="hero__actions">
+        <a href="compare.html" class="btn btn--primary">Compare Prices →</a>
+        <a href="directory.html" class="btn btn--ghost">Browse All Products</a>
+      </div>
+      <div class="hero__stats">
+        <div>
+          <span class="hero__stat-val" id="stat-products">—</span>
+          <span class="hero__stat-label">Products tracked</span>
+        </div>
+        <div>
+          <span class="hero__stat-val">2</span>
+          <span class="hero__stat-label">Stores compared</span>
+        </div>
+        <div>
+          <span class="hero__stat-val" id="stat-sales">—</span>
+          <span class="hero__stat-label">Currently on sale</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
+        <div>
+          <p class="label">Featured</p>
+          <h2 class="section-title">Top Picks Right Now</h2>
+        </div>
+        <a href="directory.html" class="btn btn--ghost btn--sm">View All →</a>
+      </div>
+      <div id="featured-grid" class="grid-4"></div>
+    </section>
+
+    <section class="section">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
+        <div>
+          <p class="label">Specials</p>
+          <h2 class="section-title">Currently On Sale</h2>
+        </div>
+        <a href="compare.html" class="btn btn--ghost btn--sm">Compare All →</a>
+      </div>
+      <div class="sale-banner">
+        <div class="sale-banner__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/><path d="M12 12c0 3-2 4-2 7a2 2 0 0 0 4 0c0-3-2-4-2-7z"/></svg></div>
+        <div class="sale-banner__text">
+          <h3>This week's specials</h3>
+          <p>Prices updated regularly. Always double-check in store.</p>
+        </div>
+      </div>
+      <div id="specials-grid" class="grid-4"></div>
+    </section>
+
+    <section class="section">
+      <div style="background:linear-gradient(135deg,rgba(77,163,255,.12),rgba(46,229,157,.08));border:1px solid rgba(77,163,255,.25);border-radius:var(--radius-lg);padding:3rem 2.5rem;text-align:center">
+        <p class="label" style="margin-bottom:.75rem">Our Standout Feature</p>
+        <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:1rem">
+          Protein Per Dollar —<br>
+          <span style="color:var(--success)">The Only Metric That Matters</span>
+        </h2>
+        <p style="color:var(--text-sec);max-width:520px;margin:0 auto 2rem;line-height:1.7">
+          Most comparison sites just show you the price. We calculate exactly how many grams of
+          protein you get for every dollar you spend.
+        </p>
+        <a href="best-value.html" class="btn btn--success">See Best Value Rankings →</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="label">Quick Search</p>
+      <h2 class="section-title" style="margin-bottom:1rem">Search Any Bar</h2>
+      <div class="controls-bar" style="margin-bottom:1rem">
+        <div class="search-bar" style="flex:1">
+          <span class="search-bar__icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+          <input type="text" id="hero-search" placeholder="Try 'Musashi' or 'Quest'…" />
+        </div>
+        <a href="compare.html" class="btn btn--primary">Full Compare →</a>
+      </div>
+      <div id="hero-results" class="grid-4"></div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__logo"><img src="favicon.png" style="width:20px;height:20px;object-fit:contain;border-radius:5px;display:block;flex-shrink:0">Protein<span>Match</span></div>
+    <ul class="footer__links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="compare.html">Compare</a></li>
+      <li><a href="directory.html">Directory</a></li>
+      <li><a href="best-value.html">Best Value</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <p class="footer__copy">Protein Match · School Web Design Project · 2025</p>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+(async () => {
+  const products = await loadProducts([document.getElementById('featured-grid'), document.getElementById('specials-grid')]);
+  const onSale   = products.filter(p => isOnSale(p));
+
+  document.getElementById('stat-products').textContent = products.length;
+  document.getElementById('stat-sales').textContent    = onSale.length;
+
+  const featured = [...products].sort((a,b) => proteinPerDollar(b) - proteinPerDollar(a)).slice(0, 4);
+  document.getElementById('featured-grid').innerHTML = featured.map((p,i) => buildCard(p,i)).join('');
+
+  const specials = onSale.slice(0, 4);
+  document.getElementById('specials-grid').innerHTML = specials.length
+    ? specials.map((p,i) => buildCard(p,i)).join('')
+    : '<p style="color:var(--text-sec);grid-column:1/-1">No specials right now — check back soon.</p>';
+
+  const heroInput   = document.getElementById('hero-search');
+  const heroResults = document.getElementById('hero-results');
+  heroInput.addEventListener('input', () => {
+    const q = heroInput.value.trim().toLowerCase();
+    if (!q) { heroResults.innerHTML = ''; return; }
+    const results = products.filter(p =>
+      p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q)
+    ).slice(0, 4);
+    heroResults.innerHTML = results.length
+      ? results.map((p,i) => buildCard(p,i)).join('')
+      : `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div class="empty-state__title">No results for "${q}"</div></div>`;
+  });
+})();
+</script>
+</body>
+</html>

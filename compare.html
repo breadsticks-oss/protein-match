@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compare Prices — Protein Match</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.png" type="image/png" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">
+      <img src="favicon.png" class="nav__logo-icon" alt="" />
+      Protein<span class="accent">Match</span>
+    </a>
+    <ul class="nav__links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="compare.html">Compare</a></li>
+      <li><a href="directory.html">All Products</a></li>
+      <li><a href="best-value.html">Best Value</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="compare.html" class="nav__cta">Find Deals →</a></li>
+    </ul>
+    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav__mobile">
+  <a href="index.html">Home</a>
+  <a href="compare.html">Compare Prices</a>
+  <a href="directory.html">All Products</a>
+  <a href="best-value.html">Best Value</a>
+  <a href="about.html">About</a>
+</div>
+
+<main class="page">
+  <div class="container">
+
+    <div style="margin-bottom:2rem">
+      <p class="label" style="margin-bottom:.35rem">Coles vs Woolworths</p>
+      <h1 style="font-size:2.2rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:.5rem">Compare Prices</h1>
+      <p style="color:var(--text-sec);font-size:.95rem">Search for any protein bar and see prices from both stores side-by-side.</p>
+    </div>
+
+    <div class="controls-bar">
+      <div class="search-bar">
+        <span class="search-bar__icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+        <input type="text" id="search-input" placeholder="Search by name or brand…" />
+      </div>
+      <label class="filter-pill" id="pill-coles">
+        <input type="checkbox" id="filter-coles" checked />
+        <span class="dot" style="background:#ff8fa3"></span> Coles
+      </label>
+      <label class="filter-pill" id="pill-woolies">
+        <input type="checkbox" id="filter-woolies" checked />
+        <span class="dot" style="background:var(--success)"></span> Woolworths
+      </label>
+      <label class="filter-pill" id="pill-sale">
+        <input type="checkbox" id="filter-sale" />
+        <span class="dot" style="background:var(--warning)"></span> On Sale Only
+      </label>
+      <select class="filter-select" id="sort-select">
+        <option value="ppd">Best Value (Protein / $)</option>
+        <option value="price-asc">Price: Low → High</option>
+        <option value="price-desc">Price: High → Low</option>
+        <option value="protein">Most Protein</option>
+        <option value="calories">Lowest Calories</option>
+        <option value="name">Name A → Z</option>
+      </select>
+      <span class="results-count" id="results-count">— products</span>
+    </div>
+
+    <div class="compare-table-wrap" style="margin-bottom:3rem">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Coles</th>
+            <th>Woolworths</th>
+            <th>Cheapest</th>
+            <th>Protein / $</th>
+            <th>Protein</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="compare-tbody">
+          <tr><td colspan="7" style="text-align:center;color:var(--text-sec);padding:2rem">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <p class="label" style="margin-bottom:.35rem">Card View</p>
+      <h2 class="section-title" style="margin-bottom:1.5rem">All Results</h2>
+      <div class="grid-4" id="cards-grid"></div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__logo"><img src="favicon.png" style="width:20px;height:20px;object-fit:contain;border-radius:5px;display:block;flex-shrink:0">Protein<span>Match</span></div>
+    <ul class="footer__links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="compare.html">Compare</a></li>
+      <li><a href="directory.html">Directory</a></li>
+      <li><a href="best-value.html">Best Value</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <p class="footer__copy">Protein Match · School Web Design Project · 2025</p>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+(async () => {
+  const all = await loadProducts([document.getElementById('cards-grid')]);
+  const searchInput = document.getElementById('search-input');
+  const sortSelect  = document.getElementById('sort-select');
+  const filterColes = document.getElementById('filter-coles');
+  const filterWool  = document.getElementById('filter-woolies');
+  const filterSale  = document.getElementById('filter-sale');
+  const pillColes   = document.getElementById('pill-coles');
+  const pillWool    = document.getElementById('pill-woolies');
+  const pillSale    = document.getElementById('pill-sale');
+  const tbody       = document.getElementById('compare-tbody');
+  const cardsGrid   = document.getElementById('cards-grid');
+  const countEl     = document.getElementById('results-count');
+
+  function render() {
+    pillColes.classList.toggle('active', filterColes.checked);
+    pillWool.classList.toggle('active',  filterWool.checked);
+    pillSale.classList.toggle('active',  filterSale.checked);
+
+    const q = searchInput.value.trim().toLowerCase();
+    let results = all.filter(p => {
+      const matchQ     = !q || p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q);
+      const matchSale  = !filterSale.checked || isOnSale(p);
+      const matchStore = (filterColes.checked && p.coles) || (filterWool.checked && p.woolworths);
+      return matchQ && matchSale && matchStore;
+    });
+
+    results.sort((a, b) => {
+      switch (sortSelect.value) {
+        case 'ppd':        return proteinPerDollar(b) - proteinPerDollar(a);
+        case 'price-asc':  return bestPrice(a) - bestPrice(b);
+        case 'price-desc': return bestPrice(b) - bestPrice(a);
+        case 'protein':    return b.protein - a.protein;
+        case 'calories':   return a.calories - b.calories;
+        case 'name':       return a.name.localeCompare(b.name);
+        default: return 0;
+      }
+    });
+
+    countEl.textContent = `${results.length} product${results.length !== 1 ? 's' : ''}`;
+
+    if (!results.length) {
+      const empty = `<tr><td colspan="7"><div class="empty-state"><div class="empty-state__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div class="empty-state__title">No results found</div><div class="empty-state__sub">Try adjusting your search or filters.</div></div></td></tr>`;
+      tbody.innerHTML = empty;
+      cardsGrid.innerHTML = '';
+      return;
+    }
+
+    // Respect the store toggles — hide a store's prices when its pill is off
+    const view = p => ({
+      ...p,
+      coles:      filterColes.checked ? p.coles      : null,
+      woolworths: filterWool.checked  ? p.woolworths  : null,
+    });
+    tbody.innerHTML     = results.map(p => buildRow(view(p))).join('');
+    cardsGrid.innerHTML = results.map((p,i) => buildCard(view(p), i)).join('');
+  }
+
+  searchInput.addEventListener('input',  render);
+  sortSelect.addEventListener('change',  render);
+  filterColes.addEventListener('change', render);
+  filterWool.addEventListener('change',  render);
+  filterSale.addEventListener('change',  render);
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Protein Match</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.png" type="image/png" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">
+      <img src="favicon.png" class="nav__logo-icon" alt="" />
+      Protein<span class="accent">Match</span>
+    </a>
+    <ul class="nav__links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="compare.html">Compare</a></li>
+      <li><a href="directory.html">All Products</a></li>
+      <li><a href="best-value.html">Best Value</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="compare.html" class="nav__cta">Find Deals →</a></li>
+    </ul>
+    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav__mobile">
+  <a href="index.html">Home</a>
+  <a href="compare.html">Compare Prices</a>
+  <a href="directory.html">All Products</a>
+  <a href="best-value.html">Best Value</a>
+  <a href="about.html">About</a>
+</div>
+
+<main class="page">
+  <div class="container">
+
+    <div class="about-hero">
+      <h1>Smarter shopping<br>for <em>serious</em> athletes.</h1>
+      <p style="color:var(--text-sec);font-size:1.05rem;max-width:560px;line-height:1.75">
+        Protein Match helps Australians find the best protein bar prices across Coles and Woolworths — without the guesswork.
+      </p>
+    </div>
+
+    <div class="grid-2" style="gap:3rem;align-items:start">
+
+      <div class="about-content">
+        <h2>Why protein matters</h2>
+        <p>Protein is the most important macronutrient for anyone who trains — it repairs muscle tissue, supports recovery, and keeps you fuller for longer. Most active people need between 1.6–2.2g of protein per kilogram of bodyweight each day, and protein bars are one of the most convenient ways to hit that target.</p>
+
+        <h2>Why comparing prices saves you money</h2>
+        <p>A bar that looks cheap at $3.00 might only have 12g of protein, while a $3.50 bar delivers 40g. That's nearly four times the protein for just 50 cents more. Without comparing, you're leaving gains and money on the table.</p>
+        <p>Coles and Woolworths rotate specials weekly, meaning the cheapest bar this week might be full price next week. Protein Match makes it easy to always know who has the better deal.</p>
+
+        <h2>What is Protein Per Dollar?</h2>
+        <p>Our standout metric. Instead of just listing prices, we calculate how many grams of protein you receive for every dollar spent. A bar with 40g protein at $3.20 gives you <strong style="color:var(--success)">12.5g of protein per dollar</strong>. A bar with 20g protein at $4.50 gives you just <strong style="color:var(--danger)">4.4g per dollar</strong>. Same category, wildly different value.</p>
+
+        <h2>About this project</h2>
+        <p>Protein Match was built as a school web design assessment, demonstrating responsive layout, card components, data tables, modals, filtering, sorting, live API data, and a consistent design system — all in pure HTML, CSS, and JavaScript.</p>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:1.5rem">
+          <div class="card__body">
+            <p class="label" style="margin-bottom:.75rem">What this site does</p>
+            <ul class="feature-list">
+              <li>Compares protein bar prices across Coles and Woolworths</li>
+              <li>Pulls real product data and images from Open Food Facts API</li>
+              <li>Search by brand, name, or flavour instantly</li>
+              <li>Filter by store, on-sale status, and brand</li>
+              <li>Sort by price, protein content, calories, or value</li>
+              <li>Calculates protein-per-dollar for every product</li>
+              <li>Full nutrition panel: protein, calories, carbs, fat, sugar</li>
+              <li>Highlights specials and sale prices clearly</li>
+              <li>Ranks bars across four different categories</li>
+              <li>Fully responsive — desktop and mobile</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:1.5rem">
+          <div class="card__body">
+            <p class="label" style="margin-bottom:1rem">By the numbers</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div style="text-align:center;padding:.75rem;background:var(--surface);border-radius:var(--radius-sm)">
+                <span style="font-family:var(--font-mono);font-size:1.75rem;color:var(--accent);display:block" id="stat-total">—</span>
+                <span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-sec)">Bars tracked</span>
+              </div>
+              <div style="text-align:center;padding:.75rem;background:var(--surface);border-radius:var(--radius-sm)">
+                <span style="font-family:var(--font-mono);font-size:1.75rem;color:var(--success);display:block" id="stat-sale">—</span>
+                <span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-sec)">On sale now</span>
+              </div>
+              <div style="text-align:center;padding:.75rem;background:var(--surface);border-radius:var(--radius-sm)">
+                <span style="font-family:var(--font-mono);font-size:1.75rem;color:var(--warning);display:block" id="stat-brands">—</span>
+                <span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-sec)">Brands</span>
+              </div>
+              <div style="text-align:center;padding:.75rem;background:var(--surface);border-radius:var(--radius-sm)">
+                <span style="font-family:var(--font-mono);font-size:1.75rem;color:var(--text);display:block">2</span>
+                <span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-sec)">Stores compared</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <p class="label" style="margin-bottom:.75rem">Built with</p>
+            <div style="display:flex;flex-wrap:wrap;gap:.5rem">
+              <span class="badge badge--new">HTML5</span>
+              <span class="badge badge--new">CSS3</span>
+              <span class="badge badge--new">Vanilla JS</span>
+              <span class="badge badge--best">Plus Jakarta Sans</span>
+              <span class="badge badge--best">DM Mono</span>
+              <span class="badge badge--best">Instrument Serif</span>
+              <span class="badge badge--sale">Open Food Facts API</span>
+            </div>
+            <p style="font-size:.8rem;color:var(--text-sec);margin-top:1rem;line-height:1.6">
+              No frameworks, no build tools. Pure HTML, CSS and JavaScript — demonstrating that great design doesn't need a library.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:4rem;text-align:center;padding:3rem 2rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg)">
+      <h2 style="font-size:1.6rem;font-weight:700;margin-bottom:.75rem">Ready to find the best deal?</h2>
+      <p style="color:var(--text-sec);margin-bottom:1.75rem;font-size:.95rem">Search across Coles and Woolworths and find your next protein bar in seconds.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <a href="compare.html" class="btn btn--primary">Compare Prices →</a>
+        <a href="best-value.html" class="btn btn--ghost">See Rankings</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__logo"><img src="favicon.png" style="width:20px;height:20px;object-fit:contain;border-radius:5px;display:block;flex-shrink:0">Protein<span>Match</span></div>
+    <ul class="footer__links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="compare.html">Compare</a></li>
+      <li><a href="directory.html">Directory</a></li>
+      <li><a href="best-value.html">Best Value</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <p class="footer__copy">Protein Match · School Web Design Project · 2025</p>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+(async () => {
+  const all = await loadProducts();
+  document.getElementById('stat-total').textContent  = all.length;
+  document.getElementById('stat-sale').textContent   = all.filter(p => isOnSale(p)).length;
+  document.getElementById('stat-brands').textContent = new Set(all.map(p => p.brand)).size;
+})();
+</script>
+</body>
+</html>
