@@ -4,9 +4,12 @@
 
 // ── Nav active state ─────────────────────────
 function setActiveNav() {
-  const page = location.pathname.split('/').pop() || 'index.html';
+  const page = location.pathname.split('/').pop() || '';
   document.querySelectorAll('.nav__links a, .nav__mobile a').forEach(a => {
-    if (a.getAttribute('href') === page) a.classList.add('active');
+    const href = a.getAttribute('href') || '';
+    // Match clean URLs and handle home page (href="/" when page="")
+    const match = href === page || (href === '/' && page === '');
+    if (match) a.classList.add('active');
   });
 }
 
