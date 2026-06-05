@@ -330,7 +330,7 @@ function buildSkeleton(count = 4) {
 const MODAL_HTML = `
 <div class="overlay" id="modal-overlay">
   <div class="modal">
-    <button class="modal__close" aria-label="Close">✕</button>
+    <button class="modal__close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <img class="modal__img" src="" alt="" style="width:100%;border-radius:10px;margin-bottom:1rem;object-fit:cover;max-height:200px;display:none" />
     <div class="modal__brand"></div>
     <div class="modal__title"></div>
@@ -377,7 +377,7 @@ function showErrorBanner(err) {
         <div style="font-weight:700;margin-bottom:.35rem;color:var(--danger)">Couldn't load live data</div>
         <div style="font-size:.85rem;color:var(--text-sec);line-height:1.6">${hint}</div>
       </div>
-      <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:var(--text-sec);cursor:pointer;font-size:1.1rem;flex-shrink:0;padding:0">✕</button>
+      <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:var(--text-sec);cursor:pointer;font-size:1.1rem;flex-shrink:0;padding:0"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>`;
   document.body.appendChild(banner);
 }
@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="pwa-banner__sub">Install for quick access, offline use</div>
       </div>
       <button class="pwa-banner__install" id="pwa-install-btn">Install</button>
-      <button class="pwa-banner__close" id="pwa-dismiss-btn">✕</button>
+      <button class="pwa-banner__close" id="pwa-dismiss-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     `;
     document.body.appendChild(banner);
     requestAnimationFrame(() => requestAnimationFrame(() => banner.classList.add('show')));
@@ -470,7 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="pwa-banner__title">Add to Home Screen</div>
           <div class="pwa-banner__sub">Tap Share → "Add to Home Screen"</div>
         </div>
-        <button class="pwa-banner__close" id="pwa-dismiss-btn">✕</button>
+        <button class="pwa-banner__close" id="pwa-dismiss-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       `;
       document.body.appendChild(banner);
       requestAnimationFrame(() => requestAnimationFrame(() => banner.classList.add('show')));

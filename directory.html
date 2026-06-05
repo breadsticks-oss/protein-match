@@ -100,11 +100,10 @@
     <!-- Category filter -->
     <div id="cat-chips" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem">
       <button class="filter-pill active" data-cat="">All</button>
-      <button class="filter-pill" data-cat="bar">🍫 Bars</button>
-      <button class="filter-pill" data-cat="yogurt">🥛 Yogurts</button>
-      <button class="filter-pill" data-cat="powder">🥤 Powders</button>
+      <button class="filter-pill" data-cat="bar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8" width="20" height="8" rx="2.5"/><path d="M8 8V7a2 2 0 0 1 4 0v1"/></svg> Bars</button>
+      <button class="filter-pill" data-cat="yogurt"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l1.5 8H5.5L7 3z"/><path d="M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/></svg> Yogurts</button>
+      <button class="filter-pill" data-cat="powder"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l1 5H7L8 3z"/><rect x="4" y="8" width="16" height="13" rx="2"/></svg> Powders</button>
     </div>
-    <div id="brand-chips" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.75rem"></div>
 
     <div class="grid-4" id="cards-grid"></div>
 
@@ -192,23 +191,6 @@
     });
   });
 
-  const chipsWrap = document.getElementById('brand-chips');
-  let activeBrand = '';
-
-  function renderChips() {
-    chipsWrap.innerHTML = brands.map(b =>
-      `<button class="filter-pill ${activeBrand === b ? 'active' : ''}" data-brand="${b}">${b}</button>`
-    ).join('');
-    chipsWrap.querySelectorAll('[data-brand]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        activeBrand = activeBrand === btn.dataset.brand ? '' : btn.dataset.brand;
-        brandSelect.value = activeBrand;
-        renderChips();
-        render();
-      });
-    });
-  }
-  renderChips();
 
   const searchInput = document.getElementById('search-input');
   const sortSelect  = document.getElementById('sort-select');
@@ -230,7 +212,7 @@
     pillSale.classList.toggle('active',  filterSale.checked);
 
     const q     = searchInput.value.trim().toLowerCase();
-    const brand = brandSelect.value || activeBrand;
+    const brand = brandSelect.value;
 
     let results = all.filter(p => {
       const matchQ     = !q || p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q);
