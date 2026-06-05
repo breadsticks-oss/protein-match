@@ -36,7 +36,7 @@
 
 /* ── Reset ──────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -572,6 +572,9 @@ select.filter-select:focus { border-color: var(--accent); }
     transition: color 0.15s ease;
     min-width: 44px;
     padding: 8px 4px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
   }
   .tab-bar__item.active { color: #4DA3FF; }
   .tab-bar__item svg { flex-shrink: 0; transition: transform 0.15s ease; }

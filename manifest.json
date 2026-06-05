@@ -20,12 +20,12 @@
   "shortcuts": [
     {
       "name": "Compare Prices",
-      "url": "/compare.html",
+      "url": "/compare",
       "description": "Compare protein bars across stores"
     },
     {
       "name": "Best Value",
-      "url": "/best-value.html",
+      "url": "/best-value",
       "description": "See protein per dollar rankings"
     }
   ]

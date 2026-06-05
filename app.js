@@ -2,13 +2,29 @@
 //  Protein Match — Shared App Logic
 // ─────────────────────────────────────────────
 
+// ── iOS PWA navigation fix ───────────────────
+// On iOS in standalone (PWA) mode, native <a> link navigation works
+// for the first page load but silently fails or pops to Safari on
+// subsequent in-app navigations. Replacing it with window.location.href
+// keeps every tap within the same WebView, on all iOS versions.
+(function () {
+  document.addEventListener('click', function (e) {
+    var anchor = e.target.closest('a');
+    if (!anchor) return;
+    var href = anchor.getAttribute('href');
+    // Only intercept internal paths; leave external / _blank links alone
+    if (!href || !href.startsWith('/') || anchor.target === '_blank') return;
+    e.preventDefault();
+    window.location.href = href;
+  }, true); // capture phase — runs before any other handlers
+})();
+
 // ── Nav active state ─────────────────────────
 function setActiveNav() {
-  const page = location.pathname.split('/').pop() || '';
+  const path = location.pathname; // e.g. "/compare" or "/"
   document.querySelectorAll('.nav__links a, .nav__mobile a').forEach(a => {
     const href = a.getAttribute('href') || '';
-    // Match clean URLs and handle home page (href="/" when page="")
-    const match = href === page || (href === '/' && page === '');
+    const match = href === path || (href === '/' && (path === '/' || path === ''));
     if (match) a.classList.add('active');
   });
 }
