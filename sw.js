@@ -1,4 +1,4 @@
-const CACHE = 'protein-match-v1';
+const CACHE = 'protein-match-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
