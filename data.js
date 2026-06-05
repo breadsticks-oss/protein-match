@@ -6,9 +6,9 @@
 
 // ── Search queries per category ──────────────
 const SEARCHES = [
-  { cat: 'bar',    woolQ: 'protein bar',        colesQ: 'protein bar'         },
-  { cat: 'yogurt', woolQ: 'protein yogurt',     colesQ: 'high protein yogurt' },
-  { cat: 'powder', woolQ: 'protein powder',     colesQ: 'protein powder'      },
+  { cat: 'bar',    woolQ: 'protein bar',        colesQ: 'protein bar',         cwQ: 'protein bar'    },
+  { cat: 'yogurt', woolQ: 'protein yogurt',     colesQ: 'high protein yogurt', cwQ: 'protein yogurt' },
+  { cat: 'powder', woolQ: 'protein powder',     colesQ: 'protein powder',      cwQ: 'protein powder' },
 ];
 
 // ── Nutrition by brand — BARS (per bar) ──────
@@ -256,7 +256,7 @@ function nameSimilarity(a, b) {
 }
 
 // ── Merge Woolworths + Coles products ─────────
-function mergeStoreProducts(woolies, coles, cat = 'bar') {
+function mergeStoreProducts(woolies, coles, cw = [], cat = 'bar') {
   const merged = [];
   const usedColes = new Set();
 
@@ -326,6 +326,51 @@ function mergeStoreProducts(woolies, coles, cat = 'bar') {
     });
   });
 
+  // ── Attach CW prices to existing merged products ──
+  const usedCW = new Set();
+  merged.forEach(product => {
+    let best = null, bestScore = 0;
+    cw.forEach((cwp, i) => {
+      if (usedCW.has(i)) return;
+      const score = nameSimilarity(product.name, cwp.name);
+      if (score > bestScore) { bestScore = score; best = { cwp, i }; }
+    });
+    if (bestScore > 0.38 && best) {
+      usedCW.add(best.i);
+      product.chemistwarehouse = { price: best.cwp.price, onSale: best.cwp.onSale, wasPrice: best.cwp.wasPrice, url: best.cwp.url };
+      if (!product.image) product.image = best.cwp.image;
+    } else {
+      product.chemistwarehouse = null;
+    }
+  });
+
+  // ── CW-only products ──
+  cw.forEach((cwp, i) => {
+    if (usedCW.has(i)) return;
+    const brand = cwp.brand || '';
+    const exactMatch = FALLBACK_PRODUCTS.find(f =>
+      f.brand.toLowerCase() === brand.toLowerCase() && nameSimilarity(f.name, cwp.name) > 0.45
+    );
+    const nutrition = exactMatch || getBrandNutrition(brand, cat) || {};
+    merged.push({
+      id:       woolies.length + coles.length + i + 1,
+      category: cat,
+      name:     cwp.name,
+      flavour:  extractFlavour(cwp.name) || '',
+      brand,
+      image:    cwp.image || null,
+      weightG:  parseInt((cwp.packageSize || '60').match(/\d+/)?.[0]) || 60,
+      protein:  nutrition.protein  || null,
+      calories: nutrition.calories || null,
+      carbs:    nutrition.carbs    || null,
+      sugar:    nutrition.sugar    || null,
+      fat:      nutrition.fat      || null,
+      woolworths:       null,
+      coles:            null,
+      chemistwarehouse: { price: cwp.price, onSale: cwp.onSale, wasPrice: cwp.wasPrice, url: cwp.url },
+    });
+  });
+
   return merged;
 }
 
@@ -348,9 +393,9 @@ async function fetchProducts() {
     });
   }
 
-  console.log('Fetching bars, yogurts & powders from Woolworths + Coles…');
+  console.log('Fetching bars, yogurts & powders from Woolworths + Coles + Chemist Warehouse…');
 
-  // 6 parallel requests: 3 categories × 2 stores
+  // 9 parallel requests: 3 categories × 3 stores
   const requests = SEARCHES.flatMap(s => [
     fetchWithTimeout(`/api/woolworths?q=${encodeURIComponent(s.woolQ)}`, 15000)
       .then(d => ({ store: 'woolworths', cat: s.cat, data: Array.isArray(d) ? d : [] }))
@@ -358,6 +403,9 @@ async function fetchProducts() {
     fetchWithTimeout(`/api/coles?q=${encodeURIComponent(s.colesQ)}`, 25000)
       .then(d => ({ store: 'coles', cat: s.cat, data: Array.isArray(d) ? d : [] }))
       .catch(() => ({ store: 'coles', cat: s.cat, data: [] })),
+    fetchWithTimeout(`/api/chemistwarehouse?q=${encodeURIComponent(s.cwQ)}`, 20000)
+      .then(d => ({ store: 'chemistwarehouse', cat: s.cat, data: Array.isArray(d) ? d : [] }))
+      .catch(() => ({ store: 'chemistwarehouse', cat: s.cat, data: [] })),
   ]);
 
   const settled = await Promise.all(requests);
@@ -379,11 +427,12 @@ async function fetchProducts() {
   }
 
   for (const { cat } of SEARCHES) {
-    const woolData  = byCategory[cat]?.woolworths || [];
-    const colesData = byCategory[cat]?.coles      || [];
-    const merged    = mergeStoreProducts(woolData, colesData, cat);
+    const woolData  = byCategory[cat]?.woolworths      || [];
+    const colesData = byCategory[cat]?.coles           || [];
+    const cwData    = byCategory[cat]?.chemistwarehouse || [];
+    const merged    = mergeStoreProducts(woolData, colesData, cwData, cat);
     allProducts.push(...merged);
-    console.log(`  ${cat}: ${woolData.length} Woolworths + ${colesData.length} Coles → ${merged.length} merged`);
+    console.log(`  ${cat}: ${woolData.length} Woolworths + ${colesData.length} Coles + ${cwData.length} CW → ${merged.length} merged`);
   }
 
   return allProducts.filter(p => p.name && p.name.length > 2);
@@ -391,16 +440,21 @@ async function fetchProducts() {
 
 // ── Helpers ──────────────────────────────────
 function bestPrice(product) {
-  const cp = product.coles?.price ?? Infinity;
-  const wp = product.woolworths?.price ?? Infinity;
-  return Math.min(cp, wp);
+  return Math.min(
+    product.coles?.price           ?? Infinity,
+    product.woolworths?.price      ?? Infinity,
+    product.chemistwarehouse?.price ?? Infinity,
+  );
 }
 
 function cheapestStore(product) {
-  const cp = product.coles?.price ?? Infinity;
-  const wp = product.woolworths?.price ?? Infinity;
-  if (cp < wp) return 'coles';
-  if (wp < cp) return 'woolworths';
+  const cp  = product.coles?.price           ?? Infinity;
+  const wp  = product.woolworths?.price      ?? Infinity;
+  const cwp = product.chemistwarehouse?.price ?? Infinity;
+  const best = Math.min(cp, wp, cwp);
+  if (cwp === best && cwp < Infinity) return 'chemistwarehouse';
+  if (cp  === best && cp  < Infinity) return 'coles';
+  if (wp  === best && wp  < Infinity) return 'woolworths';
   return 'equal';
 }
 
@@ -411,5 +465,5 @@ function proteinPerDollar(product) {
 }
 
 function isOnSale(product) {
-  return product.coles?.onSale || product.woolworths?.onSale;
+  return !!(product.coles?.onSale || product.woolworths?.onSale || product.chemistwarehouse?.onSale);
 }

@@ -30,7 +30,8 @@ function openModal(product) {
 
   const cp   = product.coles?.price ?? null;
   const wp   = product.woolworths?.price ?? null;
-  const best = Math.min(cp ?? Infinity, wp ?? Infinity);
+  const cwp  = product.chemistwarehouse?.price ?? null;
+  const best = Math.min(cp ?? Infinity, wp ?? Infinity, cwp ?? Infinity);
 
   // Image
   const imgEl = overlay.querySelector('.modal__img');
@@ -58,8 +59,9 @@ function openModal(product) {
   // Prices
   const pricesWrap = overlay.querySelector('.modal__prices');
   const stores = [
-    { name: 'Coles', data: product.coles },
-    { name: 'Woolworths', data: product.woolworths },
+    { name: 'Coles', data: product.coles, cls: 'buy-btn--coles' },
+    { name: 'Woolworths', data: product.woolworths, cls: 'buy-btn--woolies' },
+    { name: 'Chemist Warehouse', data: product.chemistwarehouse, cls: 'buy-btn--cw' },
   ];
   pricesWrap.innerHTML = stores.map(s => {
     if (!s.data) return '';
@@ -73,8 +75,10 @@ function openModal(product) {
     const q   = encodeURIComponent(product.name);
     const url = s.data.url || (s.name === 'Coles'
       ? `https://www.coles.com.au/search?q=${q}`
+      : s.name === 'Chemist Warehouse'
+      ? `https://www.chemistwarehouse.com.au/search?q=${q}`
       : `https://www.woolworths.com.au/shop/search/products?searchTerm=${q}`);
-    const btnCls  = s.name === 'Coles' ? 'buy-btn--coles' : 'buy-btn--woolies';
+    const btnCls  = s.cls;
     return `
       <div class="modal__price-row">
         <span class="modal__store">${s.name}${badge}</span>
@@ -151,7 +155,8 @@ function fmt(val, unit = '') {
 function buildCard(product, index = 0) {
   const cp   = product.coles?.price ?? null;
   const wp   = product.woolworths?.price ?? null;
-  const best = Math.min(cp ?? Infinity, wp ?? Infinity);
+  const cwp  = product.chemistwarehouse?.price ?? null;
+  const best = Math.min(cp ?? Infinity, wp ?? Infinity, cwp ?? Infinity);
   const ppd  = (product.protein && best < Infinity) ? (product.protein / best).toFixed(1) : null;
 
   function priceHTML(store, price, data) {
@@ -179,6 +184,9 @@ function buildCard(product, index = 0) {
   const woolURL  = wp != null
     ? (product.woolworths.url || `https://www.woolworths.com.au/shop/search/products?searchTerm=${encodeURIComponent(product.name)}`)
     : null;
+  const cwURL    = cwp != null
+    ? (product.chemistwarehouse.url || `https://www.chemistwarehouse.com.au/search?q=${encodeURIComponent(product.name)}`)
+    : null;
 
   return `
     <div class="card animate-in" style="animation-delay:${index * 0.05}s">
@@ -195,6 +203,7 @@ function buildCard(product, index = 0) {
           <div class="card__prices">
             ${priceHTML('Coles', cp, product.coles)}
             ${priceHTML('Woolworths', wp, product.woolworths)}
+            ${priceHTML('CW', cwp, product.chemistwarehouse)}
           </div>
           <div class="card__ppd">
             <span class="ppd__label">Protein / $1</span>
@@ -205,6 +214,7 @@ function buildCard(product, index = 0) {
       <div class="card__buy">
         ${colesURL ? `<a href="${colesURL}" target="_blank" class="buy-btn buy-btn--coles">${SVG_CART} Coles</a>` : ''}
         ${woolURL  ? `<a href="${woolURL}"  target="_blank" class="buy-btn buy-btn--woolies">${SVG_CART} Woolworths</a>` : ''}
+        ${cwURL    ? `<a href="${cwURL}"    target="_blank" class="buy-btn buy-btn--cw">${SVG_CART} CW</a>` : ''}
       </div>
     </div>`;
 }
@@ -213,7 +223,8 @@ function buildCard(product, index = 0) {
 function buildRow(product) {
   const cp   = product.coles?.price ?? null;
   const wp   = product.woolworths?.price ?? null;
-  const best = Math.min(cp ?? Infinity, wp ?? Infinity);
+  const cwp  = product.chemistwarehouse?.price ?? null;
+  const best = Math.min(cp ?? Infinity, wp ?? Infinity, cwp ?? Infinity);
   const ppd  = (product.protein && best < Infinity) ? (product.protein / best).toFixed(1) : null;
 
   function cellHTML(price, data) {
@@ -226,11 +237,12 @@ function buildRow(product) {
     return `<td class="price-cell ${cheapClass} ${saleClass}">$${price.toFixed(2)}${was}</td>`;
   }
 
-  const cheapStore = cp < wp
-    ? '<span class="badge badge--woolies">Woolworths</span>'
-    : wp < cp
-    ? '<span class="badge badge--coles">Coles</span>'
-    : '<span class="badge badge--equal">Equal</span>';
+  const store = cheapestStore(product);
+  const cheapStore =
+    store === 'chemistwarehouse' ? '<span class="badge badge--cw">Chemist WH</span>' :
+    store === 'coles'            ? '<span class="badge badge--coles">Coles</span>' :
+    store === 'woolworths'       ? '<span class="badge badge--woolies">Woolworths</span>' :
+                                   '<span class="badge badge--equal">Equal</span>';
 
   const thumb = product.image
     ? `<img src="${product.image}" style="width:42px;height:42px;object-fit:cover;border-radius:6px;flex-shrink:0" onerror="this.style.display='none'" />`
@@ -249,6 +261,7 @@ function buildRow(product) {
       </td>
       ${cellHTML(cp, product.coles)}
       ${cellHTML(wp, product.woolworths)}
+      ${cellHTML(cwp, product.chemistwarehouse)}
       <td>${cheapStore}</td>
       <td class="ppd-cell">${ppd != null ? ppd + 'g / $1' : '—'}</td>
       <td><span style="font-family:var(--font-mono);font-size:.85rem">${fmt(product.protein, 'g')}</span></td>

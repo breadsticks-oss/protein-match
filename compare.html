@@ -56,6 +56,10 @@
         <input type="checkbox" id="filter-woolies" checked />
         <span class="dot" style="background:var(--success)"></span> Woolworths
       </label>
+      <label class="filter-pill" id="pill-cw">
+        <input type="checkbox" id="filter-cw" checked />
+        <span class="dot" style="background:#ff6b50"></span> Chemist WH
+      </label>
       <label class="filter-pill" id="pill-sale">
         <input type="checkbox" id="filter-sale" />
         <span class="dot" style="background:var(--warning)"></span> On Sale Only
@@ -78,6 +82,7 @@
             <th>Product</th>
             <th>Coles</th>
             <th>Woolworths</th>
+            <th>Chemist WH</th>
             <th>Cheapest</th>
             <th>Protein / $</th>
             <th>Protein</th>
@@ -85,7 +90,7 @@
           </tr>
         </thead>
         <tbody id="compare-tbody">
-          <tr><td colspan="7" style="text-align:center;color:var(--text-sec);padding:2rem">Loading…</td></tr>
+          <tr><td colspan="8" style="text-align:center;color:var(--text-sec);padding:2rem">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -122,9 +127,11 @@
   const sortSelect  = document.getElementById('sort-select');
   const filterColes = document.getElementById('filter-coles');
   const filterWool  = document.getElementById('filter-woolies');
+  const filterCW    = document.getElementById('filter-cw');
   const filterSale  = document.getElementById('filter-sale');
   const pillColes   = document.getElementById('pill-coles');
   const pillWool    = document.getElementById('pill-woolies');
+  const pillCW      = document.getElementById('pill-cw');
   const pillSale    = document.getElementById('pill-sale');
   const tbody       = document.getElementById('compare-tbody');
   const cardsGrid   = document.getElementById('cards-grid');
@@ -133,13 +140,14 @@
   function render() {
     pillColes.classList.toggle('active', filterColes.checked);
     pillWool.classList.toggle('active',  filterWool.checked);
+    pillCW.classList.toggle('active',    filterCW.checked);
     pillSale.classList.toggle('active',  filterSale.checked);
 
     const q = searchInput.value.trim().toLowerCase();
     let results = all.filter(p => {
       const matchQ     = !q || p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q);
       const matchSale  = !filterSale.checked || isOnSale(p);
-      const matchStore = (filterColes.checked && p.coles) || (filterWool.checked && p.woolworths);
+      const matchStore = (filterColes.checked && p.coles) || (filterWool.checked && p.woolworths) || (filterCW.checked && p.chemistwarehouse);
       return matchQ && matchSale && matchStore;
     });
 
@@ -158,7 +166,7 @@
     countEl.textContent = `${results.length} product${results.length !== 1 ? 's' : ''}`;
 
     if (!results.length) {
-      const empty = `<tr><td colspan="7"><div class="empty-state"><div class="empty-state__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div class="empty-state__title">No results found</div><div class="empty-state__sub">Try adjusting your search or filters.</div></div></td></tr>`;
+      const empty = `<tr><td colspan="8"><div class="empty-state"><div class="empty-state__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div class="empty-state__title">No results found</div><div class="empty-state__sub">Try adjusting your search or filters.</div></div></td></tr>`;
       tbody.innerHTML = empty;
       cardsGrid.innerHTML = '';
       return;
@@ -167,8 +175,9 @@
     // Respect the store toggles — hide a store's prices when its pill is off
     const view = p => ({
       ...p,
-      coles:      filterColes.checked ? p.coles      : null,
-      woolworths: filterWool.checked  ? p.woolworths  : null,
+      coles:            filterColes.checked ? p.coles            : null,
+      woolworths:       filterWool.checked  ? p.woolworths        : null,
+      chemistwarehouse: filterCW.checked    ? p.chemistwarehouse  : null,
     });
     tbody.innerHTML     = results.map(p => buildRow(view(p))).join('');
     cardsGrid.innerHTML = results.map((p,i) => buildCard(view(p), i)).join('');
@@ -178,6 +187,7 @@
   sortSelect.addEventListener('change',  render);
   filterColes.addEventListener('change', render);
   filterWool.addEventListener('change',  render);
+  filterCW.addEventListener('change',    render);
   filterSale.addEventListener('change',  render);
   render();
 })();

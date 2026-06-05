@@ -56,6 +56,10 @@
         <input type="checkbox" id="filter-woolies" checked />
         <span class="dot" style="background:var(--success)"></span> Woolworths
       </label>
+      <label class="filter-pill" id="pill-cw">
+        <input type="checkbox" id="filter-cw" checked />
+        <span class="dot" style="background:#ff6b50"></span> Chemist WH
+      </label>
       <label class="filter-pill" id="pill-sale">
         <input type="checkbox" id="filter-sale" />
         <span class="dot" style="background:var(--warning)"></span> On Sale
@@ -147,9 +151,11 @@
   const sortSelect  = document.getElementById('sort-select');
   const filterColes = document.getElementById('filter-coles');
   const filterWool  = document.getElementById('filter-woolies');
+  const filterCW    = document.getElementById('filter-cw');
   const filterSale  = document.getElementById('filter-sale');
   const pillColes   = document.getElementById('pill-coles');
   const pillWool    = document.getElementById('pill-woolies');
+  const pillCW      = document.getElementById('pill-cw');
   const pillSale    = document.getElementById('pill-sale');
   const cardsGrid   = document.getElementById('cards-grid');
   const countEl     = document.getElementById('results-count');
@@ -157,6 +163,7 @@
   function render() {
     pillColes.classList.toggle('active', filterColes.checked);
     pillWool.classList.toggle('active',  filterWool.checked);
+    pillCW.classList.toggle('active',    filterCW.checked);
     pillSale.classList.toggle('active',  filterSale.checked);
 
     const q     = searchInput.value.trim().toLowerCase();
@@ -167,7 +174,7 @@
       const matchBrand = !brand || p.brand === brand;
       const matchCat   = !activeCategory || p.category === activeCategory;
       const matchSale  = !filterSale.checked || isOnSale(p);
-      const matchStore = (filterColes.checked && p.coles) || (filterWool.checked && p.woolworths);
+      const matchStore = (filterColes.checked && p.coles) || (filterWool.checked && p.woolworths) || (filterCW.checked && p.chemistwarehouse);
       return matchQ && matchBrand && matchCat && matchSale && matchStore;
     });
 
@@ -194,6 +201,7 @@
   brandSelect.addEventListener('change', e => { activeBrand = e.target.value; renderChips(); render(); });
   filterColes.addEventListener('change', render);
   filterWool.addEventListener('change',  render);
+  filterCW.addEventListener('change',    render);
   filterSale.addEventListener('change',  render);
   render();
 })();

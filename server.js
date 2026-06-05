@@ -12,6 +12,7 @@ const https = require('https');
 const fs    = require('fs');
 const path  = require('path');
 const url   = require('url');
+const os    = require('os');
 
 // Woolworths/Coles use a certificate chain Node doesn't trust by default
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -241,6 +242,127 @@ async function fetchColes(query) {
   return products;
 }
 
+// ── Local IP helper ───────────────────────────
+function getLocalIP() {
+  const nets = os.networkInterfaces();
+  for (const iface of Object.values(nets)) {
+    for (const cfg of iface) {
+      if (cfg.family === 'IPv4' && !cfg.internal) return cfg.address;
+    }
+  }
+  return 'localhost';
+}
+
+// ── Chemist Warehouse fetcher ─────────────────
+async function fetchChemistWarehouse(query) {
+  const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+  const searchURL = `https://www.chemistwarehouse.com.au/search?q=${encodeURIComponent(query)}`;
+
+  let html;
+  try {
+    const res = await fetchURL(searchURL, {
+      'User-Agent':      UA,
+      'Accept':          'text/html,application/xhtml+xml,*/*;q=0.8',
+      'Accept-Language': 'en-AU,en;q=0.9',
+      'Referer':         'https://www.google.com.au/',
+    });
+    html = res.body;
+  } catch (err) {
+    console.warn('[CW] Network error:', err.message);
+    return [];
+  }
+
+  // ── Method 1: JSON-LD ─────────────────────
+  const products = [];
+  const ldRe = /<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi;
+  let m;
+  while ((m = ldRe.exec(html)) !== null) {
+    try {
+      const data = JSON.parse(m[1]);
+      const items = data['@graph']
+        ? data['@graph']
+        : data['@type'] === 'ItemList'
+        ? (data.itemListElement || []).map(i => i.item || i)
+        : [data];
+      for (const item of items) {
+        if (item['@type'] !== 'Product') continue;
+        for (const offer of [].concat(item.offers || [])) {
+          const price = parseFloat(offer.price || offer.lowPrice || '0');
+          if (!price) continue;
+          const wasP  = parseFloat(offer.highPrice || '0') || null;
+          products.push({
+            source:      'chemistwarehouse',
+            id:          item.sku || item.productID || '',
+            name:        item.name || '',
+            brand:       item.brand?.name || '',
+            price,
+            wasPrice:    wasP && wasP > price ? wasP : null,
+            onSale:      !!(wasP && wasP > price),
+            image:       [].concat(item.image || [])[0] || null,
+            packageSize: '',
+            url:         offer.url || item.url || '',
+          });
+        }
+      }
+    } catch {}
+  }
+
+  if (products.length > 0) {
+    console.log(`[CW] ${products.length} products (JSON-LD)`);
+    return products.filter(p => p.name && p.price > 0);
+  }
+
+  // ── Method 2: embedded JSON state ─────────
+  const stateMatch = html.match(/window\.__(?:PRELOADED_STATE|INITIAL_STATE)__\s*=\s*(\{[\s\S]*?\});\s*<\/script>/);
+  if (stateMatch) {
+    try {
+      const state = JSON.parse(stateMatch[1]);
+      const raw = state?.search?.products || state?.catalogue?.products || [];
+      if (raw.length > 0) {
+        console.log(`[CW] ${raw.length} products (window state)`);
+        return raw.map(p => ({
+          source:      'chemistwarehouse',
+          id:          String(p.id || p.ProductId || ''),
+          name:        p.name || p.ProductName || '',
+          brand:       p.brand || p.BrandName || '',
+          price:       parseFloat(p.price || p.Price || p.StandardPrice || '0'),
+          wasPrice:    parseFloat(p.wasPrice || p.WasPrice || '0') || null,
+          onSale:      p.onSale || p.IsOnSale || false,
+          image:       p.image || p.ImageUrl || null,
+          packageSize: p.packageSize || '',
+          url:         p.url ? `https://www.chemistwarehouse.com.au${p.url}` : '',
+        })).filter(p => p.name && p.price > 0);
+      }
+    } catch {}
+  }
+
+  // ── Method 3: regex price scrape ─────────
+  // Last resort — extract prices and names near known product patterns
+  const tileRe = /class="[^"]*product[^"]*"[\s\S]{0,600}?href="(\/buy\/[^"]+)"[\s\S]{0,400}?alt="([^"]+)"[\s\S]{0,300}?\$(\d+\.\d{2})/gi;
+  while ((m = tileRe.exec(html)) !== null) {
+    products.push({
+      source:      'chemistwarehouse',
+      id:          m[1].split('/')[2] || '',
+      name:        m[2],
+      brand:       '',
+      price:       parseFloat(m[3]),
+      wasPrice:    null,
+      onSale:      false,
+      image:       null,
+      packageSize: '',
+      url:         `https://www.chemistwarehouse.com.au${m[1]}`,
+    });
+  }
+
+  if (products.length > 0) {
+    console.log(`[CW] ${products.length} products (regex)`);
+    return products.filter(p => p.name && p.price > 0);
+  }
+
+  console.warn('[CW] No products found — site may be bot-blocking this server IP');
+  return [];
+}
+
 // ── Route handler ─────────────────────────────
 async function handleAPI(pathname, query, res) {
   const q = query.q || 'protein bar';
@@ -252,6 +374,8 @@ async function handleAPI(pathname, query, res) {
       data = await fetchWoolworths(q);
     } else if (pathname === '/api/coles') {
       data = await fetchColes(q);
+    } else if (pathname === '/api/chemistwarehouse') {
+      data = await fetchChemistWarehouse(q);
     } else if (pathname === '/api/status') {
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Access-Control-Allow-Origin', '*');
@@ -308,13 +432,15 @@ const server = http.createServer((req, res) => {
   }
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
+  const localIP = getLocalIP();
   console.log('');
   console.log('  ✅  Protein Match server running!');
-  console.log(`  Open: http://localhost:${PORT}`);
+  console.log(`  This device: http://localhost:${PORT}`);
+  console.log(`  Same WiFi:   http://${localIP}:${PORT}`);
   console.log('');
+  console.log('  Share the WiFi link with anyone on your network.');
   console.log('  Press Ctrl+C to stop.');
   console.log('');
-
   console.log(`  [Coles] Using seeded buildId: ${_colesBuildId.slice(0, 20)}…`);
 });

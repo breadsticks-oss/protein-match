@@ -144,6 +144,7 @@ h1, h2, h3 { line-height: 1.2; letter-spacing: -0.02em; }
 .badge--woolies { background: rgba(46,229,157,0.12);  color: var(--success); border: 1px solid rgba(46,229,157,0.25); }
 .badge--equal   { background: rgba(77,163,255,0.12);  color: var(--accent);  border: 1px solid rgba(77,163,255,0.25); }
 .badge--new     { background: rgba(77,163,255,0.15);  color: var(--accent);  border: 1px solid rgba(77,163,255,0.3); }
+.badge--cw      { background: rgba(230,51,18,0.12);  color: #ff6b50; border: 1px solid rgba(230,51,18,0.25); }
 
 /* ═══════════════════════════════════════════════
    BUTTONS
@@ -239,6 +240,8 @@ h1, h2, h3 { line-height: 1.2; letter-spacing: -0.02em; }
 .buy-btn--woolies { background: rgba(46,229,157,0.07);  color: var(--success); }
 .buy-btn--coles:hover   { background: rgba(255,92,122,0.18); }
 .buy-btn--woolies:hover { background: rgba(46,229,157,0.16); }
+.buy-btn--cw        { background: rgba(230,51,18,0.07);  color: #ff6b50; }
+.buy-btn--cw:hover  { background: rgba(230,51,18,0.18); }
 
 /* ═══════════════════════════════════════════════
    HERO
