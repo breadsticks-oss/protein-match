@@ -1,7 +1,7 @@
-const CACHE = 'protein-match-v5';
+const CACHE = 'protein-match-v6';
 const STATIC_ASSETS = [
   '/styles.css',
-  '/app.js',
+  '/app.js?v=6',
   '/data.js',
   '/favicon.png',
   '/manifest.json',
