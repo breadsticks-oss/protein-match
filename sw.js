@@ -1,4 +1,4 @@
-const CACHE = 'protein-match-v7';
+const CACHE = 'protein-match-v8';
 const STATIC_ASSETS = [
   '/styles.css?v=2',
   '/app.js?v=6',
@@ -60,7 +60,8 @@ self.addEventListener('fetch', e => {
       caches.match(e.request).then(cached => {
         const networkFetch = fetch(e.request).then(res => {
           if (res && res.ok) {
-            caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+            const toCache = res.clone(); // clone synchronously before body is consumed
+            caches.open(CACHE).then(c => c.put(e.request, toCache));
           }
           return res;
         });
