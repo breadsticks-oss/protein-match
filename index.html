@@ -565,23 +565,23 @@
      SHARED: Tab bar
 ══════════════════════════════════════ -->
 <nav class="tab-bar" aria-label="Main navigation">
-  <a href="/" class="tab-bar__item" id="tab-home">
+  <a href="#" class="tab-bar__item" id="tab-home" onclick="showPage('home');return false" ontouchstart="">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     <span class="tab-bar__label">Home</span>
   </a>
-  <a href="/directory" class="tab-bar__item" id="tab-directory">
+  <a href="#" class="tab-bar__item" id="tab-directory" onclick="showPage('directory');return false" ontouchstart="">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
     <span class="tab-bar__label">Directory</span>
   </a>
-  <a href="/compare" class="tab-bar__item" id="tab-compare">
+  <a href="#" class="tab-bar__item" id="tab-compare" onclick="showPage('compare');return false" ontouchstart="">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     <span class="tab-bar__label">Compare</span>
   </a>
-  <a href="/best-value" class="tab-bar__item" id="tab-best">
+  <a href="#" class="tab-bar__item" id="tab-best" onclick="showPage('best-value');return false" ontouchstart="">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
     <span class="tab-bar__label">Best Value</span>
   </a>
-  <a href="/about" class="tab-bar__item" id="tab-about">
+  <a href="#" class="tab-bar__item" id="tab-about" onclick="showPage('about');return false" ontouchstart="">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <span class="tab-bar__label">About</span>
   </a>
@@ -953,79 +953,67 @@ async function initAbout() {
   document.getElementById('stat-brands').textContent = new Set(all.map(function(p) { return p.brand; })).size;
 }
 
-// ── SPA Router ──────────────────────────────────────────────────
-var SPA_ROUTES = {
-  '/':           { page: 'page-home',       tab: 'tab-home',      title: "Protein Match — Find Australia’s Best Protein Bar Deals", topBar: null,           init: initHome },
-  '/compare':    { page: 'page-compare',    tab: 'tab-compare',   title: 'Compare Prices — Protein Match',                                topBar: 'Compare',      init: initCompare },
-  '/directory':  { page: 'page-directory',  tab: 'tab-directory', title: 'Product Directory — Protein Match',                             topBar: 'All Products', init: initDirectory },
-  '/best-value': { page: 'page-best-value', tab: 'tab-best',      title: 'Best Value — Protein Match',                                    topBar: 'Best Value',   init: initBestValue },
-  '/about':      { page: 'page-about',      tab: 'tab-about',     title: 'About — Protein Match',                                         topBar: 'About',        init: initAbout },
+// ── Page switcher — no URL changes, no navigation ──────────────
+var _PAGE_CONFIG = {
+  ‘home’:       { page: ‘page-home’,       tab: ‘tab-home’,      topBar: null           },
+  ‘compare’:    { page: ‘page-compare’,    tab: ‘tab-compare’,   topBar: ‘Compare’      },
+  ‘directory’:  { page: ‘page-directory’,  tab: ‘tab-directory’, topBar: ‘All Products’ },
+  ‘best-value’: { page: ‘page-best-value’, tab: ‘tab-best’,      topBar: ‘Best Value’   },
+  ‘about’:      { page: ‘page-about’,      tab: ‘tab-about’,     topBar: ‘About’        },
 };
-var _spaInited = {};
+var _PAGE_INITED = {};
 
-function navigateTo(path, push) {
-  if (push === undefined) push = true;
-  var route = SPA_ROUTES[path] || SPA_ROUTES['/'];
-  var actualPath = SPA_ROUTES[path] ? path : '/';
-  if (push) history.pushState({}, '', actualPath);
+function showPage(name) {
+  var cfg = _PAGE_CONFIG[name];
+  if (!cfg) return;
 
-  document.title = route.title;
-
-  // Mobile top bar
-  var logo  = document.getElementById('mtb-logo');
-  var title = document.getElementById('mtb-title');
-  if (actualPath === '/') {
-    if (logo)  logo.style.display  = '';
-    if (title) title.style.display = 'none';
-  } else {
-    if (logo)  logo.style.display  = 'none';
-    if (title) { title.style.display = ''; title.textContent = route.topBar; }
-  }
-
-  // Show the right page, hide all others
-  Object.keys(SPA_ROUTES).forEach(function(k) {
-    var el = document.getElementById(SPA_ROUTES[k].page);
-    if (el) el.hidden = (SPA_ROUTES[k].page !== route.page);
+  // Show/hide pages
+  Object.keys(_PAGE_CONFIG).forEach(function(k) {
+    var el = document.getElementById(_PAGE_CONFIG[k].page);
+    if (el) el.hidden = (k !== name);
   });
 
   // Active tab
-  document.querySelectorAll('.tab-bar__item').forEach(function(a) { a.classList.remove('active'); });
-  var tab = document.getElementById(route.tab);
-  if (tab) tab.classList.add('active');
+  document.querySelectorAll(‘.tab-bar__item’).forEach(function(a) { a.classList.remove(‘active’); });
+  var tab = document.getElementById(cfg.tab);
+  if (tab) tab.classList.add(‘active’);
 
-  // Active desktop nav
-  document.querySelectorAll('.nav__links a, .nav__mobile a').forEach(function(a) {
-    var href = a.getAttribute('href') || '';
-    a.classList.toggle('active', href === actualPath || (href === '/' && actualPath === '/'));
-  });
+  // Mobile top bar
+  var logo  = document.getElementById(‘mtb-logo’);
+  var title = document.getElementById(‘mtb-title’);
+  if (name === ‘home’) {
+    if (logo)  logo.style.display = ‘’;
+    if (title) title.style.display = ‘none’;
+  } else {
+    if (logo)  logo.style.display = ‘none’;
+    if (title) { title.style.display = ‘’; title.textContent = cfg.topBar; }
+  }
 
   // Scroll to top
   window.scrollTo(0, 0);
 
-  // Init the page once
-  if (!_spaInited[actualPath]) {
-    _spaInited[actualPath] = true;
-    route.init();
+  // Init page data once
+  if (!_PAGE_INITED[name]) {
+    _PAGE_INITED[name] = true;
+    ({ home: initHome, compare: initCompare, directory: initDirectory,
+       ‘best-value’: initBestValue, about: initAbout })[name]();
   }
 }
 
-// Intercept ALL internal link clicks (capture phase — fires before any other handler)
-document.addEventListener('click', function(e) {
-  var a = e.target.closest('a');
-  if (!a || a.target === '_blank') return;
-  var href = a.getAttribute('href');
-  if (href && SPA_ROUTES[href] !== undefined) {
-    e.preventDefault();
-    e.stopPropagation();
-    navigateTo(href);
-  }
-}, true);
+// Intercept CTA / footer / nav links so they switch pages instead of navigating
+var _LINK_TO_PAGE = {
+  ‘/’: ‘home’, ‘/compare’: ‘compare’, ‘/directory’: ‘directory’,
+  ‘/best-value’: ‘best-value’, ‘/about’: ‘about’
+};
+document.addEventListener(‘click’, function(e) {
+  var a = e.target.closest(‘a’);
+  if (!a || a.target === ‘_blank’) return;
+  var page = _LINK_TO_PAGE[a.getAttribute(‘href’)];
+  if (page !== undefined) { e.preventDefault(); showPage(page); }
+});
 
-// Browser back / forward
-window.addEventListener('popstate', function() { navigateTo(location.pathname, false); });
-
-// Initial page load
-navigateTo(location.pathname, false);
+// Start on home
+showPage(‘home’);
 </script>
 
 <script>
