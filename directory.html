@@ -340,23 +340,23 @@
 })();
 </script>
 <nav class="tab-bar" aria-label="Main navigation">
-  <a href="/" class="tab-bar__item" id="tab-home">
+  <a href="/" class="tab-bar__item" id="tab-home" onclick="event.preventDefault();location.href=this.href" ontouchstart="">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     <span class="tab-bar__label">Home</span>
   </a>
-  <a href="/directory" class="tab-bar__item" id="tab-directory">
+  <a href="/directory" class="tab-bar__item" id="tab-directory" onclick="event.preventDefault();location.href=this.href" ontouchstart="">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
     <span class="tab-bar__label">Directory</span>
   </a>
-  <a href="/compare" class="tab-bar__item" id="tab-compare">
+  <a href="/compare" class="tab-bar__item" id="tab-compare" onclick="event.preventDefault();location.href=this.href" ontouchstart="">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     <span class="tab-bar__label">Compare</span>
   </a>
-  <a href="/best-value" class="tab-bar__item" id="tab-best">
+  <a href="/best-value" class="tab-bar__item" id="tab-best" onclick="event.preventDefault();location.href=this.href" ontouchstart="">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
     <span class="tab-bar__label">Best Value</span>
   </a>
-  <a href="/about" class="tab-bar__item" id="tab-about">
+  <a href="/about" class="tab-bar__item" id="tab-about" onclick="event.preventDefault();location.href=this.href" ontouchstart="">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <span class="tab-bar__label">About</span>
   </a>
