@@ -1,0 +1,17 @@
+/*
+  X-Content-Type-Options: nosniff
+
+/
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/compare
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/directory
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/best-value
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/about
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
