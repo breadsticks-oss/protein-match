@@ -507,20 +507,146 @@ select.filter-select:focus { border-color: var(--accent); }
 /* ═══════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════ */
+
+/* ── Tablet (≤ 900px) ───────────────────────── */
 @media (max-width: 900px) {
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .compare-table th, .compare-table td { padding: 0.75rem 0.9rem; }
 }
+
+/* ── Mobile (≤ 640px) ───────────────────────── */
 @media (max-width: 640px) {
+
+  /* Layout */
+  .container { padding: 0 1rem; }
+  .page { padding-top: calc(var(--nav-h) + 1.1rem); padding-bottom: 3.5rem; }
+  .section { margin-bottom: 2.5rem; }
+
+  /* Nav */
+  .nav { padding: 0 1rem; }
   .nav__links { display: none; }
   .hamburger { display: flex; }
+
+  /* Hero */
+  .hero { padding: 1.5rem 0 1.25rem; }
+  .hero__eyebrow { font-size: 0.72rem; padding: 0.28rem 0.85rem; margin-bottom: 1.1rem; }
+  .hero__serif-line { font-size: 1.15rem; margin-bottom: 0.65rem; }
+  .hero__sub { font-size: 0.88rem; margin-bottom: 1.5rem; }
+  .hero__actions { gap: 0.6rem; margin-bottom: 2rem; flex-wrap: nowrap; }
+  .hero__actions .btn { flex: 1; justify-content: center; font-size: 0.85rem; padding: 0.65rem 0.75rem; white-space: nowrap; }
+  .hero__stats {
+    gap: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1rem 0.25rem;
+  }
+  .hero__stats > div { padding: 0 0.25rem; border-right: 1px solid var(--border); }
+  .hero__stats > div:last-child { border-right: none; }
+  .hero__stat-val { font-size: 1.3rem; }
+  .hero__stat-label { font-size: 0.62rem; letter-spacing: 0.04em; }
+
+  /* Grids */
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-  .hero { padding: 2rem 0 1.5rem; }
-  .hero__stats { gap: 1.75rem; }
-  .controls-bar { flex-direction: column; align-items: stretch; }
-  .results-count { margin-left: 0; }
-  .footer__inner { flex-direction: column; text-align: center; }
-  .footer__links { justify-content: center; }
+
+  /* Cards */
+  .card__body { padding: 0.9rem 1rem; }
+  .card__name { font-size: 0.95rem; }
+  .card__brand { font-size: 0.65rem; }
+  .card__protein-badge { font-size: 1rem; padding: 0.18rem 0.65rem; margin-bottom: 0.75rem; }
+  .card__prices {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+  }
+  .price-pill { min-width: 0; padding: 0.5rem 0.35rem; }
+  .price-pill__price { font-size: 1.05rem; }
+  .price-pill__store { font-size: 0.6rem; letter-spacing: 0.03em; }
+  .card__ppd { padding: 0.45rem 0.75rem; }
+  .ppd__label { font-size: 0.68rem; }
+  .ppd__value { font-size: 0.88rem; }
+  .buy-btn { font-size: 0.72rem; padding: 0.75rem 0.3rem; gap: 0.2rem; }
+  .buy-btn svg { display: none; } /* hide cart icon on mobile — too cramped */
+
+  /* Section headers */
+  .section-title { font-size: 1.35rem; }
+
+  /* Controls bar — search full-width, pills wrap below */
+  .controls-bar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0.85rem 1rem;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .controls-bar .search-bar { flex: 0 0 100%; min-width: 0; }
+  .controls-bar select.filter-select { flex: 1; min-width: 120px; font-size: 0.8rem; }
+  .results-count { margin-left: 0; font-size: 0.78rem; }
+  .filter-pill { font-size: 0.75rem; padding: 0.35rem 0.75rem; }
+
+  /* Category / brand chips — horizontal scroll */
+  #cat-chips, #brand-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+  #cat-chips::-webkit-scrollbar, #brand-chips::-webkit-scrollbar { display: none; }
+
+  /* Compare table — scrollable + compact */
+  .compare-table-wrap { -webkit-overflow-scrolling: touch; }
+  .compare-table { font-size: 0.8rem; min-width: 520px; }
+  .compare-table th, .compare-table td { padding: 0.6rem 0.65rem; white-space: nowrap; }
+  .product-cell__thumb { width: 34px; height: 34px; }
+  .product-cell__name { font-size: 0.82rem; }
+  .product-cell__flavour { display: none; }
+
+  /* Sale banner */
+  .sale-banner { padding: 0.9rem 1rem; gap: 0.65rem; }
+  .sale-banner__text h3 { font-size: 0.9rem; }
+  .sale-banner__text p { font-size: 0.78rem; }
+
+  /* Modal — slides up from bottom */
+  .overlay { padding: 0; align-items: flex-end; }
+  .modal {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-bottom: none;
+    max-height: 88vh;
+    padding: 1.4rem 1.15rem 2.5rem;
+  }
+  .nutrition-grid { grid-template-columns: repeat(3, 1fr); gap: 0.45rem; margin-bottom: 1.1rem; }
+  .nutrition-item { padding: 0.6rem 0.3rem; }
+  .nutrition-item__val { font-size: 1.05rem; }
+  .nutrition-item__label { font-size: 0.6rem; }
+  .modal__title { font-size: 1.15rem; }
+  .modal__price-row { padding: 0.55rem 0; }
+  .modal__price-val { font-size: 0.98rem; }
+  .modal__store { font-size: 0.82rem; }
+
+  /* Rank list */
+  .rank-item { padding: 0.75rem 1rem; gap: 0.75rem; }
+  .rank-num { font-size: 1.1rem; width: 1.6rem; }
+  .rank-name { font-size: 0.88rem; }
+  .rank-value { font-size: 0.95rem; }
+
+  /* Footer */
+  .footer__inner { flex-direction: column; text-align: center; gap: 0.6rem; padding: 1.25rem 1rem; }
+  .footer__links { justify-content: center; flex-wrap: wrap; gap: 0.75rem 1.25rem; }
+}
+
+/* ── Small phones (≤ 390px) ─────────────────── */
+@media (max-width: 390px) {
+  .hero__title { font-size: 2rem; }
+  .hero__actions { flex-direction: column; }
+  .hero__actions .btn { width: 100%; flex: none; }
+  .buy-btn { padding: 0.75rem 0.2rem; font-size: 0.68rem; }
+  .card__prices { gap: 0.25rem; }
+  .price-pill__price { font-size: 0.95rem; }
 }
 
 /* ── Animations ─────────────────────────────── */
