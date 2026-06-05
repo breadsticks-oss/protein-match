@@ -955,11 +955,11 @@ async function initAbout() {
 
 // ── Page switcher — no URL changes, no navigation ──────────────
 var _PAGE_CONFIG = {
-  ‘home’:       { page: ‘page-home’,       tab: ‘tab-home’,      topBar: null           },
-  ‘compare’:    { page: ‘page-compare’,    tab: ‘tab-compare’,   topBar: ‘Compare’      },
-  ‘directory’:  { page: ‘page-directory’,  tab: ‘tab-directory’, topBar: ‘All Products’ },
-  ‘best-value’: { page: ‘page-best-value’, tab: ‘tab-best’,      topBar: ‘Best Value’   },
-  ‘about’:      { page: ‘page-about’,      tab: ‘tab-about’,     topBar: ‘About’        },
+  'home':       { page: 'page-home',       tab: 'tab-home',      topBar: null           },
+  'compare':    { page: 'page-compare',    tab: 'tab-compare',   topBar: 'Compare'      },
+  'directory':  { page: 'page-directory',  tab: 'tab-directory', topBar: 'All Products' },
+  'best-value': { page: 'page-best-value', tab: 'tab-best',      topBar: 'Best Value'   },
+  'about':      { page: 'page-about',      tab: 'tab-about',     topBar: 'About'        },
 };
 var _PAGE_INITED = {};
 
@@ -974,19 +974,19 @@ function showPage(name) {
   });
 
   // Active tab
-  document.querySelectorAll(‘.tab-bar__item’).forEach(function(a) { a.classList.remove(‘active’); });
+  document.querySelectorAll('.tab-bar__item').forEach(function(a) { a.classList.remove('active'); });
   var tab = document.getElementById(cfg.tab);
-  if (tab) tab.classList.add(‘active’);
+  if (tab) tab.classList.add('active');
 
   // Mobile top bar
-  var logo  = document.getElementById(‘mtb-logo’);
-  var title = document.getElementById(‘mtb-title’);
-  if (name === ‘home’) {
-    if (logo)  logo.style.display = ‘’;
-    if (title) title.style.display = ‘none’;
+  var logo  = document.getElementById('mtb-logo');
+  var title = document.getElementById('mtb-title');
+  if (name === 'home') {
+    if (logo)  logo.style.display = '';
+    if (title) title.style.display = 'none';
   } else {
-    if (logo)  logo.style.display = ‘none’;
-    if (title) { title.style.display = ‘’; title.textContent = cfg.topBar; }
+    if (logo)  logo.style.display = 'none';
+    if (title) { title.style.display = ''; title.textContent = cfg.topBar; }
   }
 
   // Scroll to top
@@ -996,24 +996,24 @@ function showPage(name) {
   if (!_PAGE_INITED[name]) {
     _PAGE_INITED[name] = true;
     ({ home: initHome, compare: initCompare, directory: initDirectory,
-       ‘best-value’: initBestValue, about: initAbout })[name]();
+       'best-value': initBestValue, about: initAbout })[name]();
   }
 }
 
 // Intercept CTA / footer / nav links so they switch pages instead of navigating
 var _LINK_TO_PAGE = {
-  ‘/’: ‘home’, ‘/compare’: ‘compare’, ‘/directory’: ‘directory’,
-  ‘/best-value’: ‘best-value’, ‘/about’: ‘about’
+  '/': 'home', '/compare': 'compare', '/directory': 'directory',
+  '/best-value': 'best-value', '/about': 'about'
 };
-document.addEventListener(‘click’, function(e) {
-  var a = e.target.closest(‘a’);
-  if (!a || a.target === ‘_blank’) return;
-  var page = _LINK_TO_PAGE[a.getAttribute(‘href’)];
+document.addEventListener('click', function(e) {
+  var a = e.target.closest('a');
+  if (!a || a.target === '_blank') return;
+  var page = _LINK_TO_PAGE[a.getAttribute('href')];
   if (page !== undefined) { e.preventDefault(); showPage(page); }
 });
 
 // Start on home
-showPage(‘home’);
+showPage('home');
 </script>
 
 <script>
