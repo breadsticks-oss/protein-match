@@ -6,6 +6,12 @@
   <title>About — Protein Match</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="favicon.png" type="image/png" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0B0F17" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ProteinMatch" />
+  <link rel="apple-touch-icon" href="favicon.png" />
 </head>
 <body>
 
@@ -191,6 +197,13 @@
   var el = document.getElementById(map[page]);
   if (el) el.classList.add('active');
 })();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>

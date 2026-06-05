@@ -1029,4 +1029,156 @@ select.filter-select:focus { border-color: var(--accent); }
 .animate-in:nth-child(3) { animation-delay: 0.15s; }
 .animate-in:nth-child(4) { animation-delay: 0.20s; }
 .animate-in:nth-child(5) { animation-delay: 0.25s; }
+
+/* ═══════════════════════════════════════════════
+   PWA — INSTALL BANNER
+   ═══════════════════════════════════════════════ */
+.pwa-banner {
+  position: fixed;
+  bottom: calc(72px + 12px + env(safe-area-inset-bottom, 0px));
+  left: 16px; right: 16px;
+  background: #141924;
+  border: 1px solid rgba(77, 163, 255, 0.35);
+  border-radius: 20px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1050;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 24px rgba(77,163,255,0.12);
+  transform: translateY(calc(100% + 20px));
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
+  pointer-events: none;
+}
+.pwa-banner.show {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+.pwa-banner__icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.pwa-banner__text { flex: 1; min-width: 0; }
+.pwa-banner__title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.pwa-banner__sub { font-size: 12px; color: #B0BCCE; }
+.pwa-banner__install {
+  background: #4DA3FF;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.pwa-banner__close {
+  background: none;
+  border: none;
+  color: #6B7280;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   PWA — OFFLINE BANNER
+   ═══════════════════════════════════════════════ */
+.offline-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1500;
+  background: #1a1000;
+  border-bottom: 1px solid rgba(255,176,32,0.35);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFB020;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+}
+.offline-bar.show { transform: translateY(0); }
+.offline-bar__dot {
+  width: 7px; height: 7px;
+  background: #FFB020;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   TAB BAR — active pill + indicator dot
+   ═══════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .tab-bar__item.active {
+    color: #4DA3FF;
+    position: relative;
+  }
+  .tab-bar__item.active::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px; height: 32px;
+    background: rgba(77, 163, 255, 0.12);
+    border-radius: 10px;
+    z-index: -1;
+  }
+
+  /* Filter/sort button badge */
+  .mobile-icon-btn[data-count]::after {
+    content: attr(data-count);
+    position: absolute;
+    top: -4px; right: -4px;
+    min-width: 16px; height: 16px;
+    background: #4DA3FF;
+    color: #fff;
+    border-radius: 99px;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    pointer-events: none;
+  }
+  .mobile-icon-btn { position: relative; }
+
+  /* Card row tap scale feedback */
+  .card__clickable:active {
+    transform: scale(0.985);
+  }
+  .card__clickable {
+    transition: transform 0.1s ease, background 0.12s ease;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   IMPROVED SHIMMER SKELETON
+   ═══════════════════════════════════════════════ */
+@keyframes shimmer-slide {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+.skeleton-line {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 1200px 100%;
+  animation: shimmer-slide 1.6s ease-in-out infinite;
+  border-radius: 6px;
+}
 .animate-in:nth-child(6) { animation-delay: 0.30s; }

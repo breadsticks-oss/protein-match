@@ -25,6 +25,7 @@ function initHamburger() {
 
 // ── Modal ────────────────────────────────────
 function openModal(product) {
+  if (navigator.vibrate) navigator.vibrate(8);
   const overlay = document.getElementById('modal-overlay');
   if (!overlay) return;
 
@@ -106,6 +107,34 @@ function initModal() {
   overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
   overlay.querySelector('.modal__close')?.addEventListener('click', closeModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // Swipe down to dismiss on mobile
+  let _touchY = 0;
+  const modal = overlay.querySelector('.modal');
+  if (!modal) return;
+  modal.addEventListener('touchstart', e => {
+    _touchY = e.touches[0].clientY;
+  }, { passive: true });
+  modal.addEventListener('touchmove', e => {
+    const dy = e.touches[0].clientY - _touchY;
+    if (dy > 0) modal.style.transform = `translateY(${dy * 0.6}px)`;
+  }, { passive: true });
+  modal.addEventListener('touchend', e => {
+    const dy = e.changedTouches[0].clientY - _touchY;
+    if (dy > 80) {
+      modal.style.transition = 'transform 0.25s ease';
+      modal.style.transform = 'translateY(100%)';
+      setTimeout(() => {
+        closeModal();
+        modal.style.transform = '';
+        modal.style.transition = '';
+      }, 220);
+    } else {
+      modal.style.transition = 'transform 0.3s cubic-bezier(0.16,1,0.3,1)';
+      modal.style.transform = '';
+      setTimeout(() => { modal.style.transition = ''; }, 300);
+    }
+  }, { passive: true });
 }
 
 // ── Category helpers ─────────────────────────
@@ -378,3 +407,99 @@ document.addEventListener('DOMContentLoaded', () => {
   initHamburger();
   initModal();
 });
+
+// ── PWA: Install prompt ───────────────────────
+(function () {
+  let _deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    _deferredPrompt = e;
+    // Don't show if already dismissed or installed
+    if (localStorage.getItem('pwa-dismissed')) return;
+    setTimeout(showInstallBanner, 3000);
+  });
+
+  function showInstallBanner() {
+    const existing = document.getElementById('pwa-install-banner');
+    if (existing) return;
+    const banner = document.createElement('div');
+    banner.id = 'pwa-install-banner';
+    banner.className = 'pwa-banner';
+    banner.innerHTML = `
+      <img class="pwa-banner__icon" src="favicon.png" alt="" />
+      <div class="pwa-banner__text">
+        <div class="pwa-banner__title">Add to Home Screen</div>
+        <div class="pwa-banner__sub">Install for quick access, offline use</div>
+      </div>
+      <button class="pwa-banner__install" id="pwa-install-btn">Install</button>
+      <button class="pwa-banner__close" id="pwa-dismiss-btn">✕</button>
+    `;
+    document.body.appendChild(banner);
+    requestAnimationFrame(() => requestAnimationFrame(() => banner.classList.add('show')));
+
+    document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+      if (!_deferredPrompt) return;
+      _deferredPrompt.prompt();
+      const { outcome } = await _deferredPrompt.userChoice;
+      _deferredPrompt = null;
+      banner.classList.remove('show');
+      setTimeout(() => banner.remove(), 400);
+    });
+    document.getElementById('pwa-dismiss-btn').addEventListener('click', () => {
+      localStorage.setItem('pwa-dismissed', '1');
+      banner.classList.remove('show');
+      setTimeout(() => banner.remove(), 400);
+    });
+  }
+
+  // iOS doesn't fire beforeinstallprompt — show a manual tip after 5s if on iOS Safari and not in standalone
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isIOS && !isStandalone && !localStorage.getItem('pwa-dismissed')) {
+    setTimeout(() => {
+      const banner = document.createElement('div');
+      banner.id = 'pwa-install-banner';
+      banner.className = 'pwa-banner';
+      banner.innerHTML = `
+        <img class="pwa-banner__icon" src="favicon.png" alt="" />
+        <div class="pwa-banner__text">
+          <div class="pwa-banner__title">Add to Home Screen</div>
+          <div class="pwa-banner__sub">Tap Share → "Add to Home Screen"</div>
+        </div>
+        <button class="pwa-banner__close" id="pwa-dismiss-btn">✕</button>
+      `;
+      document.body.appendChild(banner);
+      requestAnimationFrame(() => requestAnimationFrame(() => banner.classList.add('show')));
+      document.getElementById('pwa-dismiss-btn').addEventListener('click', () => {
+        localStorage.setItem('pwa-dismissed', '1');
+        banner.classList.remove('show');
+        setTimeout(() => banner.remove(), 400);
+      });
+    }, 5000);
+  }
+})();
+
+// ── PWA: Offline / online banner ──────────────
+(function () {
+  let bar = null;
+  function getBar() {
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.className = 'offline-bar';
+      bar.innerHTML = '<div class="offline-bar__dot"></div><span>No internet — showing cached data</span>';
+      document.body.appendChild(bar);
+    }
+    return bar;
+  }
+  function updateOnline() {
+    if (navigator.onLine) {
+      if (bar) { bar.classList.remove('show'); }
+    } else {
+      getBar().classList.add('show');
+    }
+  }
+  window.addEventListener('online',  updateOnline);
+  window.addEventListener('offline', updateOnline);
+  updateOnline();
+})();

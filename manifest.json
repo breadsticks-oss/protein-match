@@ -1,0 +1,32 @@
+{
+  "name": "Protein Match",
+  "short_name": "ProteinMatch",
+  "description": "Find Australia's best protein bar deals across Coles, Woolworths & Chemist Warehouse",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0B0F17",
+  "theme_color": "#0B0F17",
+  "orientation": "portrait-primary",
+  "categories": ["shopping", "health", "fitness"],
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Compare Prices",
+      "url": "/compare.html",
+      "description": "Compare protein bars across stores"
+    },
+    {
+      "name": "Best Value",
+      "url": "/best-value.html",
+      "description": "See protein per dollar rankings"
+    }
+  ]
+}
