@@ -43,6 +43,21 @@
       <p style="color:var(--text-sec);font-size:.95rem">Every protein bar, yogurt and powder we track — with nutrition info and live pricing.</p>
     </div>
 
+    <!-- Mobile search + filter bar (hidden on desktop via CSS) -->
+    <div class="mobile-bar">
+      <div class="search-bar">
+        <span class="search-bar__icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+        <input type="text" id="mobile-search-input" placeholder="Search products…" />
+      </div>
+      <button class="mobile-icon-btn" id="mobile-filter-btn" aria-label="Filter">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      </button>
+      <button class="mobile-icon-btn" id="mobile-sort-btn" aria-label="Sort">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5h10M11 9h7M11 13h4"/><path d="M3 17l3 3 3-3"/><path d="M6 20V4"/></svg>
+      </button>
+    </div>
+    <div class="mobile-results" id="mobile-results-count"></div>
+
     <div class="controls-bar">
       <div class="search-bar">
         <span class="search-bar__icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
@@ -86,6 +101,48 @@
     <div id="brand-chips" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.75rem"></div>
 
     <div class="grid-4" id="cards-grid"></div>
+
+    <!-- Filter Sheet -->
+    <div class="sheet-overlay" id="dir-filter-sheet">
+      <div class="sheet">
+        <div class="sheet__handle"></div>
+        <div class="sheet__title">Filter</div>
+        <div class="sheet__section-label">Stores</div>
+        <div class="sheet-option active" data-store="coles" id="sh-coles">
+          <span>Coles</span><div class="check"></div>
+        </div>
+        <div class="sheet-option active" data-store="woolworths" id="sh-wool">
+          <span>Woolworths</span><div class="check"></div>
+        </div>
+        <div class="sheet-option active" data-store="cw" id="sh-cw">
+          <span>Chemist Warehouse</span><div class="check"></div>
+        </div>
+        <div class="sheet__section-label">Special</div>
+        <div class="sheet-option" data-store="sale" id="sh-sale">
+          <span>On Sale Only</span><div class="check"></div>
+        </div>
+        <div class="sheet__section-label">Category</div>
+        <div class="sheet-radio active" data-cat="" id="sh-cat-all"><div class="radio-dot"></div><span>All</span></div>
+        <div class="sheet-radio" data-cat="bar" id="sh-cat-bar"><div class="radio-dot"></div><span>Bars</span></div>
+        <div class="sheet-radio" data-cat="yogurt" id="sh-cat-yogurt"><div class="radio-dot"></div><span>Yogurts</span></div>
+        <div class="sheet-radio" data-cat="powder" id="sh-cat-powder"><div class="radio-dot"></div><span>Powders</span></div>
+        <button class="sheet__apply" id="dir-filter-apply">Show Results</button>
+      </div>
+    </div>
+
+    <!-- Sort Sheet -->
+    <div class="sheet-overlay" id="dir-sort-sheet">
+      <div class="sheet">
+        <div class="sheet__handle"></div>
+        <div class="sheet__title">Sort By</div>
+        <div class="sheet-radio active" data-sort="ppd"><div class="radio-dot"></div><span>Best Value (Protein / $)</span></div>
+        <div class="sheet-radio" data-sort="price-asc"><div class="radio-dot"></div><span>Cheapest First</span></div>
+        <div class="sheet-radio" data-sort="price-desc"><div class="radio-dot"></div><span>Most Expensive</span></div>
+        <div class="sheet-radio" data-sort="protein"><div class="radio-dot"></div><span>Most Protein</span></div>
+        <div class="sheet-radio" data-sort="calories"><div class="radio-dot"></div><span>Lowest Calories</span></div>
+        <div class="sheet-radio" data-sort="name"><div class="radio-dot"></div><span>A → Z</span></div>
+      </div>
+    </div>
 
   </div>
 </main>
@@ -204,6 +261,121 @@
   filterCW.addEventListener('change',    render);
   filterSale.addEventListener('change',  render);
   render();
+
+  // ── Mobile filter/sort sheets ─────────────────
+  (function() {
+    var mobileInput = document.getElementById('mobile-search-input');
+    var mobileCount = document.getElementById('mobile-results-count');
+    var filterSheet = document.getElementById('dir-filter-sheet');
+    var sortSheet   = document.getElementById('dir-sort-sheet');
+
+    // Sync mobile search with desktop search
+    if (mobileInput) {
+      mobileInput.addEventListener('input', function() {
+        var desktopInput = document.getElementById('search-input');
+        if (desktopInput) { desktopInput.value = mobileInput.value; }
+        render();
+      });
+    }
+
+    // Sync results count to mobile count
+    var origCountEl = document.getElementById('results-count');
+    var observer = new MutationObserver(function() {
+      if (mobileCount && origCountEl) mobileCount.textContent = origCountEl.textContent;
+    });
+    if (origCountEl) observer.observe(origCountEl, { childList: true });
+
+    // Filter button
+    document.getElementById('mobile-filter-btn')?.addEventListener('click', function() {
+      filterSheet.classList.add('open');
+    });
+    filterSheet?.addEventListener('click', function(e) {
+      if (e.target === filterSheet) filterSheet.classList.remove('open');
+    });
+
+    // Sort button
+    document.getElementById('mobile-sort-btn')?.addEventListener('click', function() {
+      sortSheet.classList.add('open');
+    });
+    sortSheet?.addEventListener('click', function(e) {
+      if (e.target === sortSheet) sortSheet.classList.remove('open');
+    });
+
+    // Store toggles in filter sheet
+    ['coles','wool','cw','sale'].forEach(function(id) {
+      var el = document.getElementById('sh-' + id);
+      if (!el) return;
+      el.addEventListener('click', function() {
+        el.classList.toggle('active');
+        var checkboxId = id === 'wool' ? 'filter-woolies' : id === 'cw' ? 'filter-cw' : id === 'sale' ? 'filter-sale' : 'filter-' + id;
+        var cb = document.getElementById(checkboxId);
+        if (cb) { cb.checked = el.classList.contains('active'); }
+        render();
+      });
+    });
+
+    // Category radio in filter sheet
+    document.querySelectorAll('#dir-filter-sheet .sheet-radio[data-cat]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#dir-filter-sheet .sheet-radio[data-cat]').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        // Sync with desktop cat chips
+        var cat = btn.dataset.cat;
+        document.querySelectorAll('#cat-chips [data-cat]').forEach(function(b) {
+          b.classList.toggle('active', b.dataset.cat === cat);
+          if (b.dataset.cat === cat) b.click();
+        });
+      });
+    });
+
+    // Sort radio selection
+    document.querySelectorAll('#dir-sort-sheet .sheet-radio[data-sort]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#dir-sort-sheet .sheet-radio').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        var sortSel = document.getElementById('sort-select');
+        if (sortSel) { sortSel.value = btn.dataset.sort; }
+        render();
+        setTimeout(function() { sortSheet.classList.remove('open'); }, 200);
+      });
+    });
+
+    // Apply button
+    document.getElementById('dir-filter-apply')?.addEventListener('click', function() {
+      filterSheet.classList.remove('open');
+    });
+  })();
+})();
+</script>
+<nav class="tab-bar" aria-label="Main navigation">
+  <a href="index.html" class="tab-bar__item" id="tab-home">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span class="tab-bar__label">Home</span>
+  </a>
+  <a href="directory.html" class="tab-bar__item" id="tab-directory">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    <span class="tab-bar__label">Directory</span>
+  </a>
+  <a href="compare.html" class="tab-bar__item" id="tab-compare">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <span class="tab-bar__label">Compare</span>
+  </a>
+  <a href="best-value.html" class="tab-bar__item" id="tab-best">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <span class="tab-bar__label">Best Value</span>
+  </a>
+  <a href="about.html" class="tab-bar__item" id="tab-about">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span class="tab-bar__label">About</span>
+  </a>
+</nav>
+<script>
+// Set active tab based on current page
+(function() {
+  var page = location.pathname.split('/').pop() || 'index.html';
+  var map = { 'index.html': 'tab-home', 'directory.html': 'tab-directory', 'compare.html': 'tab-compare', 'best-value.html': 'tab-best', 'about.html': 'tab-about' };
+  var el = document.getElementById(map[page]);
+  if (el) el.classList.add('active');
 })();
 </script>
 </body>

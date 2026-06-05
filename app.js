@@ -200,6 +200,16 @@ function buildCard(product, index = 0) {
           <div class="card__name">${product.name}</div>
           ${product.flavour ? `<div class="card__flavour">${product.flavour}</div>` : ''}
           ${product.protein ? `<div class="card__protein-badge">${product.protein}<span>g protein</span></div>` : ''}
+          ${(() => {
+            const _cheapStore = (typeof cheapestStore !== 'undefined') ? cheapestStore(product) : null;
+            const _cheapP     = bestPrice(product);
+            const _cheapLabel = _cheapStore === 'chemistwarehouse' ? 'Chemist WH' :
+                                _cheapStore === 'coles'            ? 'Coles' :
+                                _cheapStore === 'woolworths'        ? 'Woolworths' : '';
+            return (_cheapP < Infinity && _cheapLabel)
+              ? `<div class="card__cheapest"><span class="cheapest__price">$${_cheapP.toFixed(2)}</span><span class="cheapest__store"> at ${_cheapLabel}</span></div>`
+              : '';
+          })()}
           <div class="card__prices">
             ${priceHTML('Coles', cp, product.coles)}
             ${priceHTML('Woolworths', wp, product.woolworths)}
@@ -210,6 +220,7 @@ function buildCard(product, index = 0) {
             <span class="ppd__value">${ppd != null ? ppd + 'g' : '—'}</span>
           </div>
         </div>
+        <div class="card__row-arrow">›</div>
       </div>
       <div class="card__buy">
         ${colesURL ? `<a href="${colesURL}" target="_blank" class="buy-btn buy-btn--coles">${SVG_CART} Coles</a>` : ''}
