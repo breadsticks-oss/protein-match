@@ -20,27 +20,27 @@
 ══════════════════════════════════════ -->
 <nav class="nav">
   <div class="nav__inner">
-    <a href="/" class="nav__logo">
+    <a href="#" onclick="showPage('home');return false" class="nav__logo">
       <img src="favicon.png" class="nav__logo-icon" alt="" />
       Protein<span class="accent">Match</span>
     </a>
     <ul class="nav__links">
-      <li><a href="/">Home</a></li>
-      <li><a href="/compare">Compare</a></li>
-      <li><a href="/directory">All Products</a></li>
-      <li><a href="/best-value">Best Value</a></li>
-      <li><a href="/about">About</a></li>
-      <li><a href="/compare" class="nav__cta">Find Deals →</a></li>
+      <li><a href="#" onclick="showPage('home');return false">Home</a></li>
+      <li><a href="#" onclick="showPage('compare');return false">Compare</a></li>
+      <li><a href="#" onclick="showPage('directory');return false">All Products</a></li>
+      <li><a href="#" onclick="showPage('best-value');return false">Best Value</a></li>
+      <li><a href="#" onclick="showPage('about');return false">About</a></li>
+      <li><a href="#" onclick="showPage('compare');return false" class="nav__cta">Find Deals →</a></li>
     </ul>
     <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="nav__mobile">
-  <a href="/">Home</a>
-  <a href="/compare">Compare Prices</a>
-  <a href="/directory">All Products</a>
-  <a href="/best-value">Best Value</a>
-  <a href="/about">About</a>
+  <a href="#" onclick="showPage('home');return false">Home</a>
+  <a href="#" onclick="showPage('compare');return false">Compare Prices</a>
+  <a href="#" onclick="showPage('directory');return false">All Products</a>
+  <a href="#" onclick="showPage('best-value');return false">Best Value</a>
+  <a href="#" onclick="showPage('about');return false">About</a>
 </div>
 
 <!-- SHARED: Mobile top bar (logo on home, title on inner pages) -->
@@ -73,8 +73,8 @@
         Find the best protein-per-dollar before you buy.
       </p>
       <div class="hero__actions">
-        <a href="/compare" class="btn btn--primary">Compare Prices →</a>
-        <a href="/directory" class="btn btn--ghost">Browse All Products</a>
+        <a href="#" onclick="showPage('compare');return false" class="btn btn--primary">Compare Prices →</a>
+        <a href="#" onclick="showPage('directory');return false" class="btn btn--ghost">Browse All Products</a>
       </div>
       <div class="hero__stats">
         <div>
@@ -98,7 +98,7 @@
           <p class="label">Featured</p>
           <h2 class="section-title">Top Picks Right Now</h2>
         </div>
-        <a href="/directory" class="btn btn--ghost btn--sm">View All →</a>
+        <a href="#" onclick="showPage('directory');return false" class="btn btn--ghost btn--sm">View All →</a>
       </div>
       <div id="featured-grid" class="grid-4"></div>
     </section>
@@ -109,7 +109,7 @@
           <p class="label">Specials</p>
           <h2 class="section-title">Currently On Sale</h2>
         </div>
-        <a href="/compare" class="btn btn--ghost btn--sm">Compare All →</a>
+        <a href="#" onclick="showPage('compare');return false" class="btn btn--ghost btn--sm">Compare All →</a>
       </div>
       <div class="sale-banner">
         <div class="sale-banner__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/><path d="M12 12c0 3-2 4-2 7a2 2 0 0 0 4 0c0-3-2-4-2-7z"/></svg></div>
@@ -132,7 +132,7 @@
           Most comparison sites just show you the price. We calculate exactly how many grams of
           protein you get for every dollar you spend.
         </p>
-        <a href="/best-value" class="btn btn--success">See Best Value Rankings →</a>
+        <a href="#" onclick="showPage('best-value');return false" class="btn btn--success">See Best Value Rankings →</a>
       </div>
     </section>
 
@@ -144,7 +144,7 @@
           <span class="search-bar__icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
           <input type="text" id="hero-search" placeholder="Try 'Musashi' or 'Quest'…" />
         </div>
-        <a href="/compare" class="btn btn--primary">Full Compare →</a>
+        <a href="#" onclick="showPage('compare');return false" class="btn btn--primary">Full Compare →</a>
       </div>
       <div id="hero-results" class="grid-4"></div>
     </section>
@@ -536,8 +536,8 @@
       <h2 style="font-size:1.6rem;font-weight:700;margin-bottom:.75rem">Ready to find the best deal?</h2>
       <p style="color:var(--text-sec);margin-bottom:1.75rem;font-size:.95rem">Search across Coles and Woolworths and find your next protein bar in seconds.</p>
       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-        <a href="/compare" class="btn btn--primary">Compare Prices →</a>
-        <a href="/best-value" class="btn btn--ghost">See Rankings</a>
+        <a href="#" onclick="showPage('compare');return false" class="btn btn--primary">Compare Prices →</a>
+        <a href="#" onclick="showPage('best-value');return false" class="btn btn--ghost">See Rankings</a>
       </div>
     </div>
 
@@ -551,11 +551,11 @@
   <div class="footer__inner">
     <div class="footer__logo"><img src="favicon.png" style="width:20px;height:20px;object-fit:contain;border-radius:5px;display:block;flex-shrink:0">Protein<span>Match</span></div>
     <ul class="footer__links">
-      <li><a href="/">Home</a></li>
-      <li><a href="/compare">Compare</a></li>
-      <li><a href="/directory">Directory</a></li>
-      <li><a href="/best-value">Best Value</a></li>
-      <li><a href="/about">About</a></li>
+      <li><a href="#" onclick="showPage('home');return false">Home</a></li>
+      <li><a href="#" onclick="showPage('compare');return false">Compare</a></li>
+      <li><a href="#" onclick="showPage('directory');return false">Directory</a></li>
+      <li><a href="#" onclick="showPage('best-value');return false">Best Value</a></li>
+      <li><a href="#" onclick="showPage('about');return false">About</a></li>
     </ul>
     <p class="footer__copy">Protein Match · School Web Design Project · 2025</p>
   </div>
