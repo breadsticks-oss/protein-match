@@ -418,12 +418,17 @@ async function fetchProducts() {
   }
 
   let allProducts = [];
-  let barWoolworths = byCategory.bar?.woolworths || [];
 
-  if (barWoolworths.length === 0) {
-    throw Object.assign(new Error('WOOLWORTHS_FAILED'), {
-      hint: 'Woolworths API failed. Make sure the server is running (node server.js).',
-    });
+  // Count total live results across all stores/categories
+  const totalLive = Object.values(byCategory).reduce((sum, stores) =>
+    sum + (stores.woolworths?.length || 0) + (stores.coles?.length || 0) + (stores.chemistwarehouse?.length || 0), 0
+  );
+
+  if (totalLive === 0) {
+    // No live data — Cloudflare Worker IPs are often blocked by store bot-protection.
+    // Return built-in fallback products so the UI always works on the deployed site.
+    console.log('All live APIs returned empty — using built-in fallback products');
+    return FALLBACK_PRODUCTS.map(p => ({ ...p, category: p.category || 'bar' }));
   }
 
   for (const { cat } of SEARCHES) {
