@@ -46,8 +46,9 @@
         Find Australia's Best<br>
         <span class="highlight">Protein Bar Deals</span>
       </h1>
+      <p class="hero__serif-line">Smarter shopping for <em>serious</em> athletes.</p>
       <p class="hero__sub">
-        Stop guessing. Compare protein bars across Coles and Woolworths.
+        Compare protein bars across Coles and Woolworths.
         Find the best protein-per-dollar before you buy.
       </p>
       <div class="hero__actions">
@@ -70,7 +71,7 @@
       </div>
     </section>
 
-    <section class="section">
+    <section class="section fade-up">
       <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
         <div>
           <p class="label">Featured</p>
@@ -81,7 +82,7 @@
       <div id="featured-grid" class="grid-4"></div>
     </section>
 
-    <section class="section">
+    <section class="section fade-up" data-delay="1">
       <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
         <div>
           <p class="label">Specials</p>
@@ -99,7 +100,7 @@
       <div id="specials-grid" class="grid-4"></div>
     </section>
 
-    <section class="section">
+    <section class="section fade-up">
       <div style="background:linear-gradient(135deg,rgba(77,163,255,.12),rgba(46,229,157,.08));border:1px solid rgba(77,163,255,.25);border-radius:var(--radius-lg);padding:3rem 2.5rem;text-align:center">
         <p class="label" style="margin-bottom:.75rem">Our Standout Feature</p>
         <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:1rem">
@@ -114,7 +115,7 @@
       </div>
     </section>
 
-    <section class="section">
+    <section class="section fade-up">
       <p class="label">Quick Search</p>
       <h2 class="section-title" style="margin-bottom:1rem">Search Any Bar</h2>
       <div class="controls-bar" style="margin-bottom:1rem">
@@ -147,6 +148,26 @@
 <script src="data.js"></script>
 <script src="app.js"></script>
 <script>
+// ── Scroll-reveal via IntersectionObserver ────
+(function () {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -48px 0px' });
+
+  // Observe all fade-up elements on first paint
+  document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+
+  // Re-observe after dynamic content (cards) is injected
+  window.__reObserveFadeUp = () =>
+    document.querySelectorAll('.fade-up:not(.visible)').forEach(el => io.observe(el));
+})();
+</script>
+<script>
 (async () => {
   const products = await loadProducts([document.getElementById('featured-grid'), document.getElementById('specials-grid')]);
   const onSale   = products.filter(p => isOnSale(p));
@@ -161,6 +182,9 @@
   document.getElementById('specials-grid').innerHTML = specials.length
     ? specials.map((p,i) => buildCard(p,i)).join('')
     : '<p style="color:var(--text-sec);grid-column:1/-1">No specials right now — check back soon.</p>';
+
+  // Trigger scroll-reveal for any newly visible sections
+  if (window.__reObserveFadeUp) window.__reObserveFadeUp();
 
   const heroInput   = document.getElementById('hero-search');
   const heroResults = document.getElementById('hero-results');
